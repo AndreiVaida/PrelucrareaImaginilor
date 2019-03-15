@@ -2,11 +2,16 @@ package controllers;
 
 import converters.ImageConverter;
 import domain.RGBImage;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
@@ -17,15 +22,23 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.function.Function;
 
 public class MainWindowController {
     @FXML private AnchorPane mainAnchorPane;
     @FXML private ImageView toEditImageView;
     @FXML private ImageView editedImageView;
+    @FXML private Slider aSlider;
+    @FXML private TextField aTextField;
+    @FXML private Slider bSlider;
+    @FXML private TextField bTextField;
+    private final Lab1Service lab1Service;
+    private Function<Void,Void> currentFilter;
     private Image originalImage;
     private Image toEditImage;
     private Image editedImage;
-    private final Lab1Service lab1Service;
+    private int a = 50;
+    private int b = 200;
 
     public MainWindowController() {
         lab1Service = new Lab1Service();
@@ -34,6 +47,37 @@ public class MainWindowController {
     @FXML
     private void initialize() {
         loadDefaultImage();
+        aSlider.setValue(a);
+        bSlider.setValue(b);
+        aTextField.setText(String.valueOf(a));
+        bTextField.setText(String.valueOf(b));
+
+        aSlider.valueProperty().addListener((observableValue, previousValue, newValue) -> {
+            a = newValue.intValue();
+            aTextField.setText(String.valueOf(a));
+            currentFilter.apply((Void) null);
+        });
+        bSlider.valueProperty().addListener((observableValue, previousValue, newValue) -> {
+            b = newValue.intValue();
+            bTextField.setText(String.valueOf(b));
+            currentFilter.apply((Void) null);
+        });
+        aTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                aTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+            a = ImageConverter.clamp(Integer.valueOf(aTextField.getText()));
+            aTextField.setText(String.valueOf(a));
+            aSlider.setValue(a);
+        });
+        bTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                bTextField.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+            b = ImageConverter.clamp(Integer.valueOf(bTextField.getText()));
+            bTextField.setText(String.valueOf(b));
+            bSlider.setValue(b);
+        });
     }
 
     private File openFileChooser() {
@@ -77,14 +121,6 @@ public class MainWindowController {
     }
 
     @FXML
-    public void increaseLuminosity(final ActionEvent actionEvent) {
-        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
-        lab1Service.increaseLuminosity(rgbImage);
-        editedImage = ImageConverter.rgbImageToImage(rgbImage);
-        editedImageView.setImage(editedImage);
-    }
-
-    @FXML
     public void setEditedImageInToEditView(final MouseEvent mouseEvent) {
         toEditImage = editedImage;
         toEditImageView.setImage(toEditImage);
@@ -104,5 +140,35 @@ public class MainWindowController {
         bufferedImage.getGraphics().drawImage(bi, 0, 0, null);
         ImageIO.write(bufferedImage, "jpg", file);
         System.out.println("Image saved: " + file.toString());
+    }
+
+    /* Curs 1 */
+    @FXML
+    public void increaseLuminosity(final ActionEvent actionEvent) {
+        currentFilter = this::increaseLuminosity;
+        increaseLuminosity((Void) null);
+    }
+
+    private Void increaseLuminosity(Void aVoid) {
+        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
+        lab1Service.increaseLuminosity(rgbImage);
+        editedImage = ImageConverter.rgbImageToImage(rgbImage);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    /* Curs 2 */
+    @FXML
+    public void increaseContrast(final ActionEvent actionEvent) {
+        currentFilter = this::increaseContrast;
+        increaseContrast((Void) null);
+    }
+
+    private Void increaseContrast(Void aVoid) {
+        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
+        lab1Service.increaseContrast(rgbImage, a, b);
+        editedImage = ImageConverter.rgbImageToImage(rgbImage);
+        editedImageView.setImage(editedImage);
+        return null;
     }
 }

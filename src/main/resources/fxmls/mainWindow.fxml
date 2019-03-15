@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="1200.0" stylesheets="@../csss/style.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainWindowController">
+<AnchorPane fx:id="mainAnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" stylesheets="@../csss/style.css" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.MainWindowController">
    <children>
       <MenuBar layoutY="2.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <menus>
@@ -20,14 +27,61 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Laborator 1">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#increaseLuminosity" text="Increase luminosity" />
+              <MenuItem mnemonicParsing="false" onAction="#increaseLuminosity" text="C1. Increase luminosity" />
+                  <MenuItem mnemonicParsing="false" onAction="#increaseContrast" text="C2. Increase contrast" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
+      <VBox layoutX="14.0" layoutY="36.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="34.0">
+         <children>
+            <HBox>
+               <children>
+                  <Label text="a:">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Slider fx:id="aSlider" blockIncrement="1.0" max="255.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
+                     <HBox.margin>
+                        <Insets top="4.0" />
+                     </HBox.margin>
+                  </Slider>
+                  <TextField fx:id="aTextField" prefWidth="50.0" promptText="0-255" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
+            </HBox>
+            <HBox layoutX="10.0" layoutY="10.0">
+               <children>
+                  <Label text="b:">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                  </Label>
+                  <Slider fx:id="bSlider" blockIncrement="1.0" max="255.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
+                     <HBox.margin>
+                        <Insets top="4.0" />
+                     </HBox.margin>
+                  </Slider>
+                  <TextField fx:id="bTextField" prefWidth="50.0" promptText="0-255" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="5.0" />
+               </VBox.margin>
+            </HBox>
+         </children>
+      </VBox>
       <ImageView fx:id="toEditImageView" fitHeight="550.0" fitWidth="550.0" layoutX="14.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
       <ImageView fx:id="editedImageView" fitHeight="550.0" fitWidth="550.0" layoutX="636.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
-      <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="575.0" layoutY="275.0" onMouseClicked="#setEditedImageInToEditView" pickOnBounds="true" preserveRatio="true" styleClass="clicklable">
+      <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="575.0" layoutY="275.0" onMouseClicked="#setEditedImageInToEditView" pickOnBounds="true" preserveRatio="true" styleClass="clicklable" AnchorPane.bottomAnchor="275.0" AnchorPane.rightAnchor="575.0">
          <image>
             <Image url="@../images/left-arrow.png" />
          </image>
