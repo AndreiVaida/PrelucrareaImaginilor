@@ -36,14 +36,20 @@ public class MainWindowController {
         loadDefaultImage();
     }
 
-    public void openFileChooser(ActionEvent actionEvent) throws IOException {
+    private File openFileChooser() {
         final Stage stage = (Stage) mainAnchorPane.getScene().getWindow();
         final FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Select an image");
-        final File file = fileChooser.showOpenDialog(stage);
-        if (file != null) {
-            loadImage(file);
-        }
+        fileChooser.setTitle("Select a JPEG image.");
+        return fileChooser.showOpenDialog(stage);
+    }
+
+    private File saveFileChooser() {
+        final Stage stage = (Stage) mainAnchorPane.getScene().getWindow();
+        final FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("JPEG image (*.jpg)", "*.jpg");
+        fileChooser.getExtensionFilters().add(extFilter);
+        fileChooser.setTitle("Save as");
+        return fileChooser.showSaveDialog(stage);
     }
 
     private void loadImage(final File file) throws IOException {
@@ -54,11 +60,19 @@ public class MainWindowController {
     }
 
     private void loadDefaultImage() {
-        final File file = new File("D:\\Proiecte\\IntelliJ IDEA\\PI\\Laborator\\src\\main\\resources\\images\\Teatrul (low res).jpg");
+        final File file = new File("./src/main/resources/images/Teatrul (low res).jpg");
         try {
             loadImage(file);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    @FXML
+    public void loadImage(final ActionEvent actionEvent) throws IOException {
+        final File file = openFileChooser();
+        if (file != null) {
+            loadImage(file);
         }
     }
 
@@ -74,5 +88,21 @@ public class MainWindowController {
     public void setEditedImageInToEditView(final MouseEvent mouseEvent) {
         toEditImage = editedImage;
         toEditImageView.setImage(toEditImage);
+    }
+
+    @FXML
+    public void resetToOriginal(final ActionEvent actionEvent) {
+        toEditImage = originalImage;
+        toEditImageView.setImage(toEditImage);
+    }
+
+    @FXML
+    public void exportImage(final ActionEvent actionEvent) throws IOException {
+        final File file = saveFileChooser();
+        final BufferedImage bi = SwingFXUtils.fromFXImage(editedImage, null);
+        final BufferedImage bufferedImage = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
+        bufferedImage.getGraphics().drawImage(bi, 0, 0, null);
+        ImageIO.write(bufferedImage, "jpg", file);
+        System.out.println("Image saved: " + file.toString());
     }
 }
