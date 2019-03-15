@@ -23,7 +23,7 @@ public class Lab1Service {
         }
     }
 
-    public void increaseContrast(final RGBImage rgbImage, final int a, final int b) {
+    public void increaseContrast(final RGBImage rgbImage, final int contrastLevel) {
         final int height = rgbImage.getHeight();
         final int width = rgbImage.getWidth();
 
@@ -32,25 +32,18 @@ public class Lab1Service {
                 int red = rgbImage.getRedMatrix()[i][j];
                 int green = rgbImage.getGreenMatrix()[i][j];
                 int blue = rgbImage.getBlueMatrix()[i][j];
-                red  = increasePixelContrast(red, a, b);
-                green  = increasePixelContrast(green, a, b);
-                blue  = increasePixelContrast(blue, a, b);
+                red  = increasePixelContrast(red, contrastLevel);
+                green  = increasePixelContrast(green, contrastLevel);
+                blue  = increasePixelContrast(blue, contrastLevel);
                 rgbImage.setPixel(i, j, red, green, blue);
             }
         }
     }
 
-    private int increasePixelContrast(int pixel, final int a, final int b) {
+    private int increasePixelContrast(int pixel, final int contrastLevel) {
 //        pixel = (int) ((Math.sin(Math.PI*pixel/L - Math.PI/2) + 1) / 2 * L);
-        if (pixel <= a) {
-            pixel = pixel * pixel / a;
-        }
-        else if (pixel > b) {
-            pixel = (pixel-b) / (L-b) * (L-b) + b;
-        }
-        else {
-            pixel = (pixel-a) / (b-a) * (b-a) + a;
-        }
+        final double factor = (259.0 * (contrastLevel + 255.0)) / (255.0 * (259.0 - contrastLevel));
+        pixel = (int) (factor * (pixel - 128) + 128);
         return ImageConverter.clamp(pixel);
     }
 }

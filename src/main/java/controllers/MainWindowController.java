@@ -2,8 +2,6 @@ package controllers;
 
 import converters.ImageConverter;
 import domain.RGBImage;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,7 +9,6 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
@@ -113,7 +110,7 @@ public class MainWindowController {
     }
 
     @FXML
-    public void loadImage(final ActionEvent actionEvent) throws IOException {
+    public void loadImageHandler(final ActionEvent actionEvent) throws IOException {
         final File file = openFileChooser();
         if (file != null) {
             loadImage(file);
@@ -121,19 +118,19 @@ public class MainWindowController {
     }
 
     @FXML
-    public void setEditedImageInToEditView(final MouseEvent mouseEvent) {
+    public void setEditedImageInToEditViewHandler(final MouseEvent mouseEvent) {
         toEditImage = editedImage;
         toEditImageView.setImage(toEditImage);
     }
 
     @FXML
-    public void resetToOriginal(final ActionEvent actionEvent) {
+    public void resetToOriginalHandler(final ActionEvent actionEvent) {
         toEditImage = originalImage;
         toEditImageView.setImage(toEditImage);
     }
 
     @FXML
-    public void exportImage(final ActionEvent actionEvent) throws IOException {
+    public void exportImageHandler(final ActionEvent actionEvent) throws IOException {
         final File file = saveFileChooser();
         final BufferedImage bi = SwingFXUtils.fromFXImage(editedImage, null);
         final BufferedImage bufferedImage = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
@@ -144,7 +141,7 @@ public class MainWindowController {
 
     /* Curs 1 */
     @FXML
-    public void increaseLuminosity(final ActionEvent actionEvent) {
+    public void increaseLuminosityHandler(final ActionEvent actionEvent) {
         currentFilter = this::increaseLuminosity;
         increaseLuminosity((Void) null);
     }
@@ -159,14 +156,14 @@ public class MainWindowController {
 
     /* Curs 2 */
     @FXML
-    public void increaseContrast(final ActionEvent actionEvent) {
+    public void increaseContrastHandler(final ActionEvent actionEvent) {
         currentFilter = this::increaseContrast;
         increaseContrast((Void) null);
     }
 
     private Void increaseContrast(Void aVoid) {
         final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
-        lab1Service.increaseContrast(rgbImage, a, b);
+        lab1Service.increaseContrast(rgbImage, a);
         editedImage = ImageConverter.rgbImageToImage(rgbImage);
         editedImageView.setImage(editedImage);
         return null;
