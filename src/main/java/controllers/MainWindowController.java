@@ -1,16 +1,19 @@
 package controllers;
 
 import converters.ImageConverter;
+import domain.GrayscaleImage;
 import domain.RGBImage;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import services.Lab1Service;
@@ -25,10 +28,13 @@ public class MainWindowController {
     @FXML private AnchorPane mainAnchorPane;
     @FXML private ImageView toEditImageView;
     @FXML private ImageView editedImageView;
-    @FXML private Slider aSlider;
-    @FXML private TextField aTextField;
-    @FXML private Slider bSlider;
-    @FXML private TextField bTextField;
+    @FXML private Label labelCurrentTransformationName;
+    @FXML private HBox containerA;
+    @FXML private HBox containerB;
+    @FXML private Slider sliderA;
+    @FXML private Slider sliderB;
+    @FXML private TextField textFieldA;
+    @FXML private TextField textFieldB;
     private final Lab1Service lab1Service;
     private Function<Void,Void> currentFilter;
     private Image originalImage;
@@ -44,36 +50,38 @@ public class MainWindowController {
     @FXML
     private void initialize() {
         loadDefaultImage();
-        aSlider.setValue(a);
-        bSlider.setValue(b);
-        aTextField.setText(String.valueOf(a));
-        bTextField.setText(String.valueOf(b));
+        containerA.setDisable(true);
+        containerB.setDisable(true);
+        sliderA.setValue(a);
+        sliderB.setValue(b);
+        textFieldA.setText(String.valueOf(a));
+        textFieldB.setText(String.valueOf(b));
 
-        aSlider.valueProperty().addListener((observableValue, previousValue, newValue) -> {
+        sliderA.valueProperty().addListener((observableValue, previousValue, newValue) -> {
             a = newValue.intValue();
-            aTextField.setText(String.valueOf(a));
-            currentFilter.apply((Void) null);
+            textFieldA.setText(String.valueOf(a));
+            currentFilter.apply(null);
         });
-        bSlider.valueProperty().addListener((observableValue, previousValue, newValue) -> {
+        sliderB.valueProperty().addListener((observableValue, previousValue, newValue) -> {
             b = newValue.intValue();
-            bTextField.setText(String.valueOf(b));
-            currentFilter.apply((Void) null);
+            textFieldB.setText(String.valueOf(b));
+            currentFilter.apply(null);
         });
-        aTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+        textFieldA.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
-                aTextField.setText(newValue.replaceAll("[^\\d]", ""));
+                textFieldA.setText(newValue.replaceAll("[^\\d]", ""));
             }
-            a = ImageConverter.clamp(Integer.valueOf(aTextField.getText()));
-            aTextField.setText(String.valueOf(a));
-            aSlider.setValue(a);
+            a = ImageConverter.clamp(Integer.valueOf(textFieldA.getText()));
+            textFieldA.setText(String.valueOf(a));
+            sliderA.setValue(a);
         });
-        bTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+        textFieldB.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
-                bTextField.setText(newValue.replaceAll("[^\\d]", ""));
+                textFieldB.setText(newValue.replaceAll("[^\\d]", ""));
             }
-            b = ImageConverter.clamp(Integer.valueOf(bTextField.getText()));
-            bTextField.setText(String.valueOf(b));
-            bSlider.setValue(b);
+            b = ImageConverter.clamp(Integer.valueOf(textFieldB.getText()));
+            textFieldB.setText(String.valueOf(b));
+            sliderB.setValue(b);
         });
     }
 
@@ -141,12 +149,32 @@ public class MainWindowController {
 
     /* Curs 1 */
     @FXML
-    public void increaseLuminosityHandler(final ActionEvent actionEvent) {
-        currentFilter = this::increaseLuminosity;
-        increaseLuminosity((Void) null);
+    public void convertToGrayscaleHandler(final ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Convert to grayscale");
+        containerA.setDisable(true);
+        containerB.setDisable(true);
+        currentFilter = this::convertToGrayscale;
+        convertToGrayscale(null);
     }
 
-    private Void increaseLuminosity(Void aVoid) {
+    private Void convertToGrayscale(Void ignored) {
+        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
+        final GrayscaleImage grayscaleImage = lab1Service.convertToGrayscale(rgbImage);
+        editedImage = ImageConverter.grayscaleImageToImage(grayscaleImage);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    @FXML
+    public void increaseLuminosityHandler(final ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C1. Increase luminosity");
+        containerA.setDisable(true);
+        containerB.setDisable(true);
+        currentFilter = this::increaseLuminosity;
+        increaseLuminosity(null);
+    }
+
+    private Void increaseLuminosity(Void ignored) {
         final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
         lab1Service.increaseLuminosity(rgbImage);
         editedImage = ImageConverter.rgbImageToImage(rgbImage);
@@ -157,15 +185,37 @@ public class MainWindowController {
     /* Curs 2 */
     @FXML
     public void increaseContrastHandler(final ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C2. Increase contrast");
+        containerA.setDisable(true);
+        containerB.setDisable(true);
         currentFilter = this::increaseContrast;
-        increaseContrast((Void) null);
+        increaseContrast(null);
     }
 
-    private Void increaseContrast(Void aVoid) {
+    private Void increaseContrast(Void ignored) {
         final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
-        lab1Service.increaseContrast(rgbImage, a);
+        lab1Service.increaseContrast(rgbImage, a, b);
         editedImage = ImageConverter.rgbImageToImage(rgbImage);
         editedImageView.setImage(editedImage);
         return null;
     }
+
+    /* Curs 3 */
+    @FXML
+    public void bitExtractionHandler(final ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C3. Bit extraction");
+        containerA.setDisable(false);
+        containerB.setDisable(true);
+        currentFilter = this::bitExtraction;
+        bitExtraction(null);
+    }
+
+    private Void bitExtraction(final Void ignored) {
+        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
+        final GrayscaleImage grayscaleImage = lab1Service.bitExtraction(rgbImage, a);
+        editedImage = ImageConverter.grayscaleImageToImage(grayscaleImage);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
 }
