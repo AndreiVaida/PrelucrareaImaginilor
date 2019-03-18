@@ -87,7 +87,7 @@ public class Lab1Service {
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (grayscaleImage.getMatrix()[i][j] % k == 0) {
+                if (grayscaleImage.getMatrix()[i][j] == k) {
                     grayscaleImage.setPixel(i, j, L);
                 }
                 else {
