@@ -1,7 +1,7 @@
 package controllers;
 
 import converters.ImageConverter;
-import domain.GrayscaleImage;
+import domain.GreyscaleImage;
 import domain.RGBImage;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -33,6 +33,8 @@ public class MainWindowController {
     @FXML private HBox containerB;
     @FXML private Slider sliderA;
     @FXML private Slider sliderB;
+    @FXML private Label labelASlider;
+    @FXML private Label labelBSlider;
     @FXML private TextField textFieldA;
     @FXML private TextField textFieldB;
     private final Lab1Service lab1Service;
@@ -50,8 +52,7 @@ public class MainWindowController {
     @FXML
     private void initialize() {
         loadDefaultImage();
-        containerA.setDisable(true);
-        containerB.setDisable(true);
+        disableSliders();
         sliderA.setValue(a);
         sliderB.setValue(b);
         textFieldA.setText(String.valueOf(a));
@@ -147,20 +148,26 @@ public class MainWindowController {
         System.out.println("Image saved: " + file.toString());
     }
 
-    /* Curs 1 */
-    @FXML
-    public void convertToGrayscaleHandler(final ActionEvent actionEvent) {
-        labelCurrentTransformationName.setText("Convert to grayscale");
+    private void disableSliders() {
         containerA.setDisable(true);
         containerB.setDisable(true);
-        currentFilter = this::convertToGrayscale;
-        convertToGrayscale(null);
+        containerA.setOpacity(0);
+        containerB.setOpacity(0);
     }
 
-    private Void convertToGrayscale(Void ignored) {
+    /* Curs 1 */
+    @FXML
+    public void convertToGreyscaleHandler(final ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Convert to grayscale");
+        currentFilter = this::convertToGreyscale;
+        disableSliders();
+        convertToGreyscale(null);
+    }
+
+    private Void convertToGreyscale(Void ignored) {
         final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
-        final GrayscaleImage grayscaleImage = lab1Service.convertToGrayscale(rgbImage);
-        editedImage = ImageConverter.grayscaleImageToImage(grayscaleImage);
+        final GreyscaleImage greyscaleImage = lab1Service.convertToGrayscale(rgbImage);
+        editedImage = ImageConverter.grayscaleImageToImage(greyscaleImage);
         editedImageView.setImage(editedImage);
         return null;
     }
@@ -168,9 +175,8 @@ public class MainWindowController {
     @FXML
     public void increaseLuminosityHandler(final ActionEvent actionEvent) {
         labelCurrentTransformationName.setText("C1. Increase luminosity");
-        containerA.setDisable(true);
-        containerB.setDisable(true);
         currentFilter = this::increaseLuminosity;
+        disableSliders();
         increaseLuminosity(null);
     }
 
@@ -186,9 +192,8 @@ public class MainWindowController {
     @FXML
     public void increaseContrastHandler(final ActionEvent actionEvent) {
         labelCurrentTransformationName.setText("C2. Increase contrast");
-        containerA.setDisable(true);
-        containerB.setDisable(true);
         currentFilter = this::increaseContrast;
+        disableSliders();
         increaseContrast(null);
     }
 
@@ -204,16 +209,23 @@ public class MainWindowController {
     @FXML
     public void bitExtractionHandler(final ActionEvent actionEvent) {
         labelCurrentTransformationName.setText("C3. Bit extraction");
+        currentFilter = this::bitExtraction;
         containerA.setDisable(false);
         containerB.setDisable(true);
-        currentFilter = this::bitExtraction;
+        containerA.setOpacity(1);
+        containerB.setOpacity(0);
+        sliderA.setMin(0);
+        sliderA.setMax(7);
+        sliderA.setValue(0);
+        sliderA.setMajorTickUnit(1);
+        labelASlider.setText("bit");
         bitExtraction(null);
     }
 
     private Void bitExtraction(final Void ignored) {
         final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
-        final GrayscaleImage grayscaleImage = lab1Service.bitExtraction(rgbImage, a);
-        editedImage = ImageConverter.grayscaleImageToImage(grayscaleImage);
+        final GreyscaleImage greyscaleImage = lab1Service.bitExtraction(rgbImage, a);
+        editedImage = ImageConverter.grayscaleImageToImage(greyscaleImage);
         editedImageView.setImage(editedImage);
         return null;
     }

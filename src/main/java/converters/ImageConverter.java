@@ -1,14 +1,11 @@
 package converters;
 
-import domain.GrayscaleImage;
+import domain.GreyscaleImage;
 import domain.RGBImage;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelReader;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
-
-import java.awt.image.BufferedImage;
 
 public class ImageConverter {
     private ImageConverter() {}
@@ -59,17 +56,17 @@ public class ImageConverter {
         return writableImage;
     }
 
-    public static Image grayscaleImageToImage(final GrayscaleImage grayscaleImage) {
-        final int height = grayscaleImage.getHeight();
-        final int width = grayscaleImage.getWidth();
+    public static Image grayscaleImageToImage(final GreyscaleImage greyscaleImage) {
+        final int height = greyscaleImage.getHeight();
+        final int width = greyscaleImage.getWidth();
         final WritableImage writableImage = new WritableImage(width, height);
         final PixelWriter pixelWriter = writableImage.getPixelWriter();
 
         for (int x = 0; x < width; x++){
             for (int y = 0; y < height; y++){
-                final int r = grayscaleImage.getMatrix()[y][x];
-                final int g = grayscaleImage.getMatrix()[y][x];
-                final int b = grayscaleImage.getMatrix()[y][x];
+                final int r = greyscaleImage.getMatrix()[y][x];
+                final int g = greyscaleImage.getMatrix()[y][x];
+                final int b = greyscaleImage.getMatrix()[y][x];
                 pixelWriter.setColor(x, y, Color.rgb(r, g, b));
             }
         }

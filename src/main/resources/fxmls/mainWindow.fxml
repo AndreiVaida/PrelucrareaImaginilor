@@ -27,7 +27,7 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Laborator 1">
             <items>
-                  <MenuItem mnemonicParsing="false" onAction="#convertToGrayscaleHandler" text="Convert to grayscale" />
+                  <MenuItem mnemonicParsing="false" onAction="#convertToGreyscaleHandler" text="Convert to grayscale" />
               <MenuItem mnemonicParsing="false" onAction="#increaseLuminosityHandler" text="C1. Increase luminosity" />
                   <MenuItem mnemonicParsing="false" onAction="#increaseContrastHandler" text="C2. Increase contrast" />
                   <MenuItem mnemonicParsing="false" onAction="#bitExtractionHandler" text="C3. Bit extraction" />
@@ -52,13 +52,21 @@
             </HBox>
             <HBox fx:id="containerA">
                <children>
-                  <Label text="a:">
+                  <Label fx:id="labelASlider" text="a">
                      <HBox.margin>
-                        <Insets right="10.0" />
+                        <Insets />
                      </HBox.margin>
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
+                  </Label>
+                  <Label layoutX="10.0" layoutY="10.0" text=":">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
                   </Label>
                   <Slider fx:id="sliderA" blockIncrement="1.0" max="255.0" min="1.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
                      <HBox.margin>
@@ -73,13 +81,21 @@
             </HBox>
             <HBox fx:id="containerB" layoutX="10.0" layoutY="10.0">
                <children>
-                  <Label text="b:">
+                  <Label fx:id="labelBSlider" text="b">
                      <HBox.margin>
-                        <Insets right="10.0" />
+                        <Insets />
                      </HBox.margin>
                      <font>
                         <Font name="System Bold" size="14.0" />
                      </font>
+                  </Label>
+                  <Label layoutX="10.0" layoutY="10.0" text=":">
+                     <font>
+                        <Font name="System Bold" size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
                   </Label>
                   <Slider fx:id="sliderB" blockIncrement="1.0" max="255.0" min="1.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
                      <HBox.margin>

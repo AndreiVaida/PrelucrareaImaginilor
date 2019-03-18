@@ -1,16 +1,16 @@
 package services;
 
 import converters.ImageConverter;
-import domain.GrayscaleImage;
+import domain.GreyscaleImage;
 import domain.RGBImage;
 
 public class Lab1Service {
     private static final int L = 255;
 
-    public GrayscaleImage convertToGrayscale(final RGBImage rgbImage) {
+    public GreyscaleImage convertToGrayscale(final RGBImage rgbImage) {
         final int height = rgbImage.getHeight();
         final int width = rgbImage.getWidth();
-        final GrayscaleImage grayscaleImage = new GrayscaleImage(height, width);
+        final GreyscaleImage greyscaleImage = new GreyscaleImage(height, width);
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -18,10 +18,10 @@ public class Lab1Service {
                 int green = rgbImage.getGreenMatrix()[i][j];
                 int blue = rgbImage.getBlueMatrix()[i][j];
                 final int value = (red + green + blue) / 3;
-                grayscaleImage.setPixel(i, j, value);
+                greyscaleImage.setPixel(i, j, value);
             }
         }
-        return grayscaleImage;
+        return greyscaleImage;
     }
 
     public void increaseLuminosity(final RGBImage rgbImage) {
@@ -80,22 +80,31 @@ public class Lab1Service {
         }*/
     }
 
-    public GrayscaleImage bitExtraction(final RGBImage rgbImage, final int k) {
-        final GrayscaleImage grayscaleImage = convertToGrayscale(rgbImage);
-        final int height = grayscaleImage.getHeight();
-        final int width = grayscaleImage.getWidth();
+    public GreyscaleImage bitExtraction(final RGBImage rgbImage, final int k) {
+        final GreyscaleImage greyscaleImage = convertToGrayscale(rgbImage);
+        final int height = greyscaleImage.getHeight();
+        final int width = greyscaleImage.getWidth();
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (grayscaleImage.getMatrix()[i][j] == k) {
-                    grayscaleImage.setPixel(i, j, L);
+                final int pixel = greyscaleImage.getMatrix()[i][j];
+                final String binaryValue = intToBinary(pixel);
+                int bitK = Character.getNumericValue(binaryValue.charAt(k));
+                if (bitK == 1) {
+                    bitK = 255;
                 }
-                else {
-                    grayscaleImage.setPixel(i, j, 0);
-                }
+                greyscaleImage.setPixel(i, j, bitK);
             }
         }
-        return grayscaleImage;
+        return greyscaleImage;
+    }
+
+    private String intToBinary(final int pixel) {
+        String binaryValue = Integer.toBinaryString(pixel);
+        while (binaryValue.length() < 8) {
+            binaryValue = '0' + binaryValue;
+        }
+        return binaryValue;
     }
 
 }
