@@ -27,8 +27,10 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Laborator 1">
             <items>
+                  <MenuItem mnemonicParsing="false" onAction="#convertToGrayscaleHandler" text="Convert to grayscale" />
               <MenuItem mnemonicParsing="false" onAction="#increaseLuminosityHandler" text="C1. Increase luminosity" />
                   <MenuItem mnemonicParsing="false" onAction="#increaseContrastHandler" text="C2. Increase contrast" />
+                  <MenuItem mnemonicParsing="false" onAction="#bitExtractionHandler" text="C3. Bit extraction" />
             </items>
           </Menu>
         </menus>
@@ -36,6 +38,19 @@
       <VBox layoutX="14.0" layoutY="36.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="34.0">
          <children>
             <HBox>
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+               <children>
+                  <Label text="Current transformation: " />
+                  <Label fx:id="labelCurrentTransformationName">
+                     <font>
+                        <Font name="System Italic" size="12.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox fx:id="containerA">
                <children>
                   <Label text="a:">
                      <HBox.margin>
@@ -45,18 +60,18 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Slider fx:id="aSlider" blockIncrement="1.0" max="255.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
+                  <Slider fx:id="sliderA" blockIncrement="1.0" max="255.0" min="1.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
                      <HBox.margin>
                         <Insets top="4.0" />
                      </HBox.margin>
                   </Slider>
-                  <TextField fx:id="aTextField" prefWidth="50.0" promptText="0-255" />
+                  <TextField fx:id="textFieldA" prefWidth="50.0" promptText="0-255" />
                </children>
                <VBox.margin>
                   <Insets bottom="5.0" />
                </VBox.margin>
             </HBox>
-            <HBox layoutX="10.0" layoutY="10.0">
+            <HBox fx:id="containerB" layoutX="10.0" layoutY="10.0">
                <children>
                   <Label text="b:">
                      <HBox.margin>
@@ -66,12 +81,12 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <Slider fx:id="bSlider" blockIncrement="1.0" max="255.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
+                  <Slider fx:id="sliderB" blockIncrement="1.0" max="255.0" min="1.0" prefWidth="255.0" showTickLabels="true" showTickMarks="true">
                      <HBox.margin>
                         <Insets top="4.0" />
                      </HBox.margin>
                   </Slider>
-                  <TextField fx:id="bTextField" prefWidth="50.0" promptText="0-255" />
+                  <TextField fx:id="textFieldB" prefWidth="50.0" promptText="0-255" />
                </children>
                <VBox.margin>
                   <Insets bottom="5.0" />
