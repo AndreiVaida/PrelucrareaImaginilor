@@ -20,15 +20,15 @@
         <menus>
           <Menu mnemonicParsing="false" text="Image">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#loadImage" text="Load" />
-                  <MenuItem mnemonicParsing="false" onAction="#exportImage" text="Export" />
-                  <MenuItem mnemonicParsing="false" onAction="#resetToOriginal" text="Reset to original" />
+              <MenuItem mnemonicParsing="false" onAction="#loadImageHandler" text="Load" />
+                  <MenuItem mnemonicParsing="false" onAction="#exportImageHandler" text="Export" />
+                  <MenuItem mnemonicParsing="false" onAction="#resetToOriginalHandler" text="Reset to original" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Laborator 1">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#increaseLuminosity" text="C1. Increase luminosity" />
-                  <MenuItem mnemonicParsing="false" onAction="#increaseContrast" text="C2. Increase contrast" />
+              <MenuItem mnemonicParsing="false" onAction="#increaseLuminosityHandler" text="C1. Increase luminosity" />
+                  <MenuItem mnemonicParsing="false" onAction="#increaseContrastHandler" text="C2. Increase contrast" />
             </items>
           </Menu>
         </menus>
@@ -81,7 +81,7 @@
       </VBox>
       <ImageView fx:id="toEditImageView" fitHeight="550.0" fitWidth="550.0" layoutX="14.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
       <ImageView fx:id="editedImageView" fitHeight="550.0" fitWidth="550.0" layoutX="636.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
-      <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="575.0" layoutY="275.0" onMouseClicked="#setEditedImageInToEditView" pickOnBounds="true" preserveRatio="true" styleClass="clicklable" AnchorPane.bottomAnchor="275.0" AnchorPane.rightAnchor="575.0">
+      <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="575.0" layoutY="275.0" onMouseClicked="#setEditedImageInToEditViewHandler" pickOnBounds="true" preserveRatio="true" styleClass="clicklable" AnchorPane.bottomAnchor="275.0" AnchorPane.rightAnchor="575.0">
          <image>
             <Image url="@../images/left-arrow.png" />
          </image>
