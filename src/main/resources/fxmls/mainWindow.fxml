@@ -111,12 +111,30 @@
             </HBox>
          </children>
       </VBox>
-      <ImageView fx:id="toEditImageView" fitHeight="550.0" fitWidth="550.0" layoutX="14.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" />
-      <ImageView fx:id="editedImageView" fitHeight="550.0" fitWidth="550.0" layoutX="636.0" layoutY="236.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+      <VBox layoutX="14.0" layoutY="136.0" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0">
+         <children>
+            <Label text="Original image" textFill="#808080">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </Label>
+            <ImageView fx:id="toEditImageView" fitHeight="450.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </VBox>
       <ImageView fitHeight="50.0" fitWidth="50.0" layoutX="575.0" layoutY="275.0" onMouseClicked="#setEditedImageInToEditViewHandler" pickOnBounds="true" preserveRatio="true" styleClass="clicklable" AnchorPane.bottomAnchor="275.0" AnchorPane.rightAnchor="575.0">
          <image>
             <Image url="@../images/left-arrow.png" />
          </image>
       </ImageView>
+      <VBox layoutX="636.0" layoutY="136.0" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0">
+         <children>
+            <Label text="Edited image" textFill="#808080">
+               <VBox.margin>
+                  <Insets bottom="10.0" />
+               </VBox.margin>
+            </Label>
+            <ImageView fx:id="editedImageView" fitHeight="450.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

@@ -111,6 +111,8 @@ public class MainWindowController {
         originalImage = SwingFXUtils.toFXImage(bufferedImage, null);
         toEditImage = originalImage;
         toEditImageView.setImage(toEditImage);
+        editedImage = toEditImage;
+        editedImageView.setImage(editedImage);
     }
 
     private void loadDefaultImage() {
