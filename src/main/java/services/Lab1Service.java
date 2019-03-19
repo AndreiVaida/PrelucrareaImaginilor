@@ -41,7 +41,7 @@ public class Lab1Service {
         }
     }
 
-    public void increaseContrast(final RGBImage rgbImage, final int a, final int b) {
+    public void increaseContrast(final RGBImage rgbImage, int a, int b) {
         final int height = rgbImage.getHeight();
         final int width = rgbImage.getWidth();
 
@@ -63,9 +63,6 @@ public class Lab1Service {
         pixel = (int) ((Math.sin(Math.PI*pixel/L - Math.PI/2) + 1) / 2 * L);
         return ImageConverter.clamp(pixel);
 
-        // normal contrast change
-        /*final double factor = (259.0 * (contrastLevel + 255.0)) / (255.0 * (259.0 - contrastLevel));
-        pixel = (int) (factor * (pixel - 128) + 128);*/
         // accentuare liniară
         /*final int va = a - 20;
         final int vb = b + 20;
@@ -78,6 +75,29 @@ public class Lab1Service {
         else {
             pixel = (pixel-a) / (b-a) * (vb-va) + va;
         }*/
+    }
+
+    public void changeContrast(final RGBImage rgbImage, final int contrastLevel) {
+        final int height = rgbImage.getHeight();
+        final int width = rgbImage.getWidth();
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                int red = rgbImage.getRedMatrix()[i][j];
+                int green = rgbImage.getGreenMatrix()[i][j];
+                int blue = rgbImage.getBlueMatrix()[i][j];
+                red  = changePixelContrast(red, contrastLevel);
+                green  = changePixelContrast(green, contrastLevel);
+                blue  = changePixelContrast(blue, contrastLevel);
+                rgbImage.setPixel(i, j, red, green, blue);
+            }
+        }
+    }
+
+    private int changePixelContrast(int pixel, int contrastLevel) {
+        final double factor = (259.0 * (contrastLevel + 255.0)) / (255.0 * (259.0 - contrastLevel));
+        pixel = (int) (factor * (pixel - 128) + 128);
+        return ImageConverter.clamp(pixel);
     }
 
     public GreyscaleImage bitExtraction(final RGBImage rgbImage, final int k) {
@@ -106,5 +126,4 @@ public class Lab1Service {
         }
         return binaryValue;
     }
-
 }

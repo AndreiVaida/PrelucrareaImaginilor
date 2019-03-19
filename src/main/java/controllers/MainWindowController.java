@@ -11,6 +11,8 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
@@ -68,22 +70,24 @@ public class MainWindowController {
             textFieldB.setText(String.valueOf(b));
             currentFilter.apply(null);
         });
-        textFieldA.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                textFieldA.setText(newValue.replaceAll("[^\\d]", ""));
+    }
+
+    public void changeATextFieldHandler(final KeyEvent keyEvent) {
+        try {
+            a = Integer.valueOf(textFieldA.getText());
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                sliderA.setValue(a);
             }
-            a = ImageConverter.clamp(Integer.valueOf(textFieldA.getText()));
-            textFieldA.setText(String.valueOf(a));
-            sliderA.setValue(a);
-        });
-        textFieldB.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                textFieldB.setText(newValue.replaceAll("[^\\d]", ""));
+        } catch (NumberFormatException ignored) {}
+    }
+
+    public void changeBTextFieldHandler(final KeyEvent keyEvent) {
+        try {
+            b = Integer.valueOf(textFieldB.getText());
+            if (keyEvent.getCode() == KeyCode.ENTER) {
+                sliderB.setValue(b);
             }
-            b = ImageConverter.clamp(Integer.valueOf(textFieldB.getText()));
-            textFieldB.setText(String.valueOf(b));
-            sliderB.setValue(b);
-        });
+        } catch (NumberFormatException ignored) {}
     }
 
     private File openFileChooser() {
@@ -205,6 +209,30 @@ public class MainWindowController {
         return null;
     }
 
+    @FXML
+    public void changeContrastHandler(final ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Change contrast");
+        currentFilter = this::changeContrast;
+        containerA.setDisable(false);
+        containerB.setDisable(true);
+        containerA.setOpacity(1);
+        containerB.setOpacity(0);
+        sliderA.setMin(-255);
+        sliderA.setMax(255);
+        sliderA.setValue(0);
+        sliderA.setMajorTickUnit(25);
+        labelASlider.setText("contrast");
+        changeContrast(null);
+    }
+
+    private Void changeContrast(Void ignored) {
+        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
+        lab1Service.changeContrast(rgbImage, a);
+        editedImage = ImageConverter.rgbImageToImage(rgbImage);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
     /* Curs 3 */
     @FXML
     public void bitExtractionHandler(final ActionEvent actionEvent) {
@@ -229,5 +257,4 @@ public class MainWindowController {
         editedImageView.setImage(editedImage);
         return null;
     }
-
 }

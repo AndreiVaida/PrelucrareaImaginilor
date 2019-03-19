@@ -30,6 +30,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#convertToGreyscaleHandler" text="Convert to grayscale" />
               <MenuItem mnemonicParsing="false" onAction="#increaseLuminosityHandler" text="C1. Increase luminosity" />
                   <MenuItem mnemonicParsing="false" onAction="#increaseContrastHandler" text="C2. Increase contrast" />
+                  <MenuItem mnemonicParsing="false" onAction="#changeContrastHandler" text="Change contrast" />
                   <MenuItem mnemonicParsing="false" onAction="#bitExtractionHandler" text="C3. Bit extraction" />
             </items>
           </Menu>
@@ -73,7 +74,7 @@
                         <Insets top="4.0" />
                      </HBox.margin>
                   </Slider>
-                  <TextField fx:id="textFieldA" prefWidth="50.0" promptText="0-255" />
+                  <TextField fx:id="textFieldA" onKeyReleased="#changeATextFieldHandler" prefWidth="50.0" promptText="0-255" />
                </children>
                <VBox.margin>
                   <Insets bottom="5.0" />
@@ -102,7 +103,7 @@
                         <Insets top="4.0" />
                      </HBox.margin>
                   </Slider>
-                  <TextField fx:id="textFieldB" prefWidth="50.0" promptText="0-255" />
+                  <TextField fx:id="textFieldB" onKeyReleased="#changeBTextFieldHandler" prefWidth="50.0" promptText="0-255" />
                </children>
                <VBox.margin>
                   <Insets bottom="5.0" />
