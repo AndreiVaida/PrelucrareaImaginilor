@@ -19,6 +19,7 @@ import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import services.Lab1Service;
+import services.Lab2Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -40,6 +41,7 @@ public class MainWindowController {
     @FXML private TextField textFieldA;
     @FXML private TextField textFieldB;
     private final Lab1Service lab1Service;
+    private final Lab2Service lab2Service;
     private Function<Void,Void> currentFilter;
     private Image originalImage;
     private Image toEditImage;
@@ -49,6 +51,7 @@ public class MainWindowController {
 
     public MainWindowController() {
         lab1Service = new Lab1Service();
+        lab2Service = new Lab2Service();
     }
 
     @FXML
@@ -116,9 +119,10 @@ public class MainWindowController {
     }
 
     private void loadDefaultImage() {
-        final File file = new File("./src/main/resources/images/Teatrul (low res).jpg");
+        final File defaultImage = new File("./src/main/resources/images/Teatrul (low res).jpg");
+        final File imageForNoiseReduction = new File("./src/main/resources/images/Talisman (low res).jpg");
         try {
-            loadImage(file);
+            loadImage(imageForNoiseReduction);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -258,5 +262,39 @@ public class MainWindowController {
         editedImage = ImageConverter.grayscaleImageToImage(greyscaleImage);
         editedImageView.setImage(editedImage);
         return null;
+    }
+
+    /* Curs 4 */
+    @FXML
+    public void medianFilterHandler(final ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C4. a.3) Filtrare mediană");
+        currentFilter = this::medianFilter;
+        containerA.setDisable(false);
+        containerB.setDisable(true);
+        containerA.setOpacity(1);
+        containerB.setOpacity(0);
+        sliderA.setMin(2);
+        sliderA.setMax(5);
+        sliderA.setValue(3);
+        sliderA.setMajorTickUnit(1);
+        labelASlider.setText("Matrix size");
+        medianFilter(null);
+    }
+
+    private Void medianFilter(Void ignored) {
+        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
+        lab2Service.medianFilter(rgbImage, a);
+        editedImage = ImageConverter.rgbImageToImage(rgbImage);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    /* Curs 5 */
+    @FXML
+    public void invertContrastHandler(final ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void pseudocolorImagehandler(final ActionEvent actionEvent) {
     }
 }

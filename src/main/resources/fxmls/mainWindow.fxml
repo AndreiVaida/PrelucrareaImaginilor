@@ -34,6 +34,13 @@
                   <MenuItem mnemonicParsing="false" onAction="#bitExtractionHandler" text="C3. Bit extraction" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="laborator 2">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#medianFilterHandler" text="C4. a.3) Filtrare mediană" />
+                  <MenuItem mnemonicParsing="false" onAction="#invertContrastHandler" text="C5. d) Inversarea contrastului și scalarea statistică" />
+                  <MenuItem mnemonicParsing="false" onAction="#pseudocolorImagehandler" text="C5. g) Pseudocolorarea imaginilor medicale" />
+              </items>
+            </Menu>
         </menus>
       </MenuBar>
       <VBox layoutX="14.0" layoutY="36.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="34.0">
