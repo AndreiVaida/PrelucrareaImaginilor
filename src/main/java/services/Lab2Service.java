@@ -1,14 +1,32 @@
 package services;
 
+import domain.GreyscaleImage;
 import domain.RGBImage;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Lab2Service {
     private static final int L = 255;
+    private final Map<Integer,Integer[]> pseudocolorTable;
+
+    public Lab2Service() {
+        pseudocolorTable = new HashMap<>();
+        try {
+            loadPseudocolorTable();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void medianFilter(final RGBImage rgbImage, final int matrixSize) {
         final int height = rgbImage.getHeight();
@@ -81,5 +99,90 @@ public class Lab2Service {
             sum += array.get(i);
         }
         return sum / start;
+    }
+
+    public void invertContrast(final RGBImage rgbImage, final int matrixSize) {
+        final int height = rgbImage.getHeight();
+        final int width = rgbImage.getWidth();
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                final Integer[][] redMatrix = getNeighborPixels(rgbImage.getRedMatrix(), matrixSize, i, j);
+                final Integer[][] greenMatrix = getNeighborPixels(rgbImage.getGreenMatrix(), matrixSize, i, j);
+                final Integer[][] blueMatrix = getNeighborPixels(rgbImage.getBlueMatrix(), matrixSize, i, j);
+                final int red = computeInvertContrast(redMatrix);
+                final int green = computeInvertContrast(greenMatrix);
+                final int blue = computeInvertContrast(blueMatrix);
+
+                rgbImage.setPixel(i, j, red, green, blue);
+            }
+        }
+    }
+
+    private int computeInvertContrast(final Integer[][] matrix) {
+        final int miu = computeMiu(matrix);
+        final int sigma = computeSigma(matrix, miu);
+        if (sigma == 0) {
+            return miu;
+        }
+        return miu / sigma;
+    }
+
+    private int computeMiu(final Integer[][] matrix) {
+        int sum = 0;
+        for (Integer[] line : matrix) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                sum += line[j];
+            }
+        }
+        final int nrElems = matrix.length * matrix[0].length;
+        return sum / nrElems;
+    }
+
+    private int computeSigma(final Integer[][] matrix, final int miu) {
+        int sum = 0;
+        for (Integer[] line : matrix) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                sum += Math.pow(line[j] - miu, 2);
+            }
+        }
+        final int nrElems = matrix.length * matrix[0].length;
+        return (int) Math.sqrt(sum / (double)nrElems);
+    }
+
+    public RGBImage pseudocolorImage(final GreyscaleImage greyscaleImage) {
+
+
+        final int height = greyscaleImage.getHeight();
+        final int width = greyscaleImage.getWidth();
+        final RGBImage rgbImage = new RGBImage(height, width);
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                final int pixel = greyscaleImage.getMatrix()[i][j] / 4;
+                final Integer[] rgbValues = pseudocolorTable.get(pixel);
+                final int r = rgbValues[0] * 4;
+                final int g = rgbValues[1] * 4;
+                final int b = rgbValues[2] * 4;
+                rgbImage.setPixel(i, j, r, g, b);
+            }
+        }
+        return rgbImage;
+    }
+
+    private void loadPseudocolorTable() throws IOException {
+        final File file = new File("./src/main/resources/docs/PseudocolorTable.txt");
+        final BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
+        String line;
+        while ((line = bufferedReader.readLine()) != null && line.length() > 1) {
+            final String[] splitLine = line.split(" ");
+            final int grayPixel = Integer.parseInt(splitLine[0]);
+            final String[] rgbValuesStr = splitLine[1].split(",");
+            final Integer[] rgbValues = new Integer[3];
+            rgbValues[0] = Integer.parseInt(rgbValuesStr[0]);
+            rgbValues[1] = Integer.parseInt(rgbValuesStr[1]);
+            rgbValues[2] = Integer.parseInt(rgbValuesStr[2]);
+            pseudocolorTable.put(grayPixel, rgbValues);
+        }
     }
 }

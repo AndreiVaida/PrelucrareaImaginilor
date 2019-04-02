@@ -126,10 +126,11 @@ public class MainWindowController {
     }
 
     private void loadDefaultImage() {
-        final File defaultImage = new File("./src/main/resources/images/Teatrul (low res).jpg");
-        final File imageForNoiseReduction = new File("./src/main/resources/images/Talisman (low res).jpg");
+        final File theatre = new File("./src/main/resources/images/Teatrul (low res).jpg");
+        final File talisman = new File("./src/main/resources/images/Talisman (low res).jpg");
+        final File biomedicalImage = new File("./src/main/resources/images/Radiografie (low res).jpg");
         try {
-            loadImage(imageForNoiseReduction);
+            loadImage(theatre);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -319,9 +320,40 @@ public class MainWindowController {
     /* Curs 5 */
     @FXML
     public void invertContrastHandler(final ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C5. d) Inversarea contrastului și scalarea statistică");
+        changedByUser = false;
+        disableSliders();
+        a = 2;
+        changedByUser = true;
+        currentFilter = this::invertContrast;
+        currentFilter.apply(null);
+    }
+
+    private Void invertContrast(Void ignored) {
+        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
+        lab2Service.invertContrast(rgbImage, a);
+        editedImage = ImageConverter.rgbImageToImage(rgbImage);
+        editedImageView.setImage(editedImage);
+        return null;
     }
 
     @FXML
-    public void pseudocolorImagehandler(final ActionEvent actionEvent) {
+    public void pseudocolorImageHandler(final ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C5. g) Pseudocolorarea imaginilor medicale");
+        changedByUser = false;
+        disableSliders();
+        a = 2;
+        changedByUser = true;
+        currentFilter = this::pseudocolorImage;
+        currentFilter.apply(null);
+    }
+
+    private Void pseudocolorImage(Void ignored) {
+        final RGBImage rgbImage = ImageConverter.bufferedImageToRgbImage(toEditImage);
+        final GreyscaleImage greyscaleImage = lab1Service.convertToGrayscale(rgbImage);
+        final RGBImage coloredImage = lab2Service.pseudocolorImage(greyscaleImage);
+        editedImage = ImageConverter.rgbImageToImage(coloredImage);
+        editedImageView.setImage(editedImage);
+        return null;
     }
 }
