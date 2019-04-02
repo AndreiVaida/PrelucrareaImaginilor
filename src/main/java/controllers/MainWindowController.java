@@ -48,6 +48,7 @@ public class MainWindowController {
     private Image editedImage;
     private int a = 50;
     private int b = 200;
+    private boolean changedByUser = true;
 
     public MainWindowController() {
         lab1Service = new Lab1Service();
@@ -64,11 +65,17 @@ public class MainWindowController {
         textFieldB.setText(String.valueOf(b));
 
         sliderA.valueProperty().addListener((observableValue, previousValue, newValue) -> {
+            if (!changedByUser) {
+                return;
+            }
             a = newValue.intValue();
             textFieldA.setText(String.valueOf(a));
             currentFilter.apply(null);
         });
         sliderB.valueProperty().addListener((observableValue, previousValue, newValue) -> {
+            if (!changedByUser) {
+                return;
+            }
             b = newValue.intValue();
             textFieldB.setText(String.valueOf(b));
             currentFilter.apply(null);
@@ -169,9 +176,11 @@ public class MainWindowController {
     @FXML
     public void convertToGreyscaleHandler(final ActionEvent actionEvent) {
         labelCurrentTransformationName.setText("Convert to grayscale");
-        currentFilter = this::convertToGreyscale;
+        changedByUser = false;
         disableSliders();
-        convertToGreyscale(null);
+        changedByUser = true;
+        currentFilter = this::convertToGreyscale;
+        currentFilter.apply(null);
     }
 
     private Void convertToGreyscale(Void ignored) {
@@ -185,9 +194,11 @@ public class MainWindowController {
     @FXML
     public void increaseLuminosityHandler(final ActionEvent actionEvent) {
         labelCurrentTransformationName.setText("C1. Increase luminosity");
-        currentFilter = this::increaseLuminosity;
+        changedByUser = false;
         disableSliders();
-        increaseLuminosity(null);
+        changedByUser = true;
+        currentFilter = this::increaseLuminosity;
+        currentFilter.apply(null);
     }
 
     private Void increaseLuminosity(Void ignored) {
@@ -202,9 +213,11 @@ public class MainWindowController {
     @FXML
     public void increaseContrastHandler(final ActionEvent actionEvent) {
         labelCurrentTransformationName.setText("C2. Increase contrast");
-        currentFilter = this::increaseContrast;
+        changedByUser = false;
         disableSliders();
-        increaseContrast(null);
+        changedByUser = true;
+        currentFilter = this::increaseContrast;
+        currentFilter.apply(null);
     }
 
     private Void increaseContrast(Void ignored) {
@@ -218,17 +231,21 @@ public class MainWindowController {
     @FXML
     public void changeContrastHandler(final ActionEvent actionEvent) {
         labelCurrentTransformationName.setText("Change contrast");
-        currentFilter = this::changeContrast;
+        changedByUser = false;
         containerA.setDisable(false);
         containerB.setDisable(true);
         containerA.setOpacity(1);
         containerB.setOpacity(0);
         sliderA.setMin(-255);
         sliderA.setMax(255);
-        sliderA.setValue(0);
+        a = 0;
+        sliderA.setValue(a);
         sliderA.setMajorTickUnit(25);
+        textFieldA.setText(String.valueOf(a));
         labelASlider.setText("contrast");
-        changeContrast(null);
+        changedByUser = true;
+        currentFilter = this::changeContrast;
+        currentFilter.apply(null);
     }
 
     private Void changeContrast(Void ignored) {
@@ -243,17 +260,22 @@ public class MainWindowController {
     @FXML
     public void bitExtractionHandler(final ActionEvent actionEvent) {
         labelCurrentTransformationName.setText("C3. Bit extraction");
-        currentFilter = this::bitExtraction;
+        changedByUser = false;
         containerA.setDisable(false);
         containerB.setDisable(true);
         containerA.setOpacity(1);
         containerB.setOpacity(0);
         sliderA.setMin(0);
         sliderA.setMax(7);
-        sliderA.setValue(0);
+        a = 0;
+        sliderA.setValue(a);
         sliderA.setMajorTickUnit(1);
+        sliderA.setMinorTickCount(0);
+        textFieldA.setText(String.valueOf(a));
         labelASlider.setText("bit");
-        bitExtraction(null);
+        changedByUser = true;
+        currentFilter = this::bitExtraction;
+        currentFilter.apply(null);
     }
 
     private Void bitExtraction(final Void ignored) {
@@ -268,17 +290,22 @@ public class MainWindowController {
     @FXML
     public void medianFilterHandler(final ActionEvent actionEvent) {
         labelCurrentTransformationName.setText("C4. a.3) Filtrare mediană");
-        currentFilter = this::medianFilter;
+        changedByUser = false;
         containerA.setDisable(false);
         containerB.setDisable(true);
         containerA.setOpacity(1);
         containerB.setOpacity(0);
         sliderA.setMin(2);
         sliderA.setMax(5);
-        sliderA.setValue(3);
+        a = 3;
+        sliderA.setValue(a);
         sliderA.setMajorTickUnit(1);
+        sliderA.setMinorTickCount(0);
+        textFieldA.setText(String.valueOf(a));
         labelASlider.setText("Matrix size");
-        medianFilter(null);
+        changedByUser = true;
+        currentFilter = this::medianFilter;
+        currentFilter.apply(null);
     }
 
     private Void medianFilter(Void ignored) {
