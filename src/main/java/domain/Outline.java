@@ -16,16 +16,10 @@ public class Outline {
         matrix = new boolean[height][width];
     }
 
-    public Outline(boolean[][] matrix) {
-        this.matrix = matrix;
-        width = matrix.length;
-        height = matrix[0].length;
-    }
-
     public Outline(final Outline outline) {
         matrix = new boolean[outline.height][outline.width];
-        width = matrix.length;
-        height = matrix[0].length;
+        height = matrix.length;
+        width = matrix[0].length;
         for (int i = 0; i < height; i++) {
             System.arraycopy(outline.matrix[i], 0, matrix[i], 0, width);
         }
