@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Lab2Service {
-    private static final int L = 255;
     private final Map<Integer,Integer[]> pseudocolorTable;
 
     public Lab2Service() {

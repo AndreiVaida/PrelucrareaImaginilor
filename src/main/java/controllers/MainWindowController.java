@@ -1,7 +1,9 @@
 package controllers;
 
 import converters.ImageConverter;
+import domain.BlackWhiteImage;
 import domain.GreyscaleImage;
+import domain.Outline;
 import domain.RGBImage;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
@@ -11,15 +13,19 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import services.Lab1Service;
 import services.Lab2Service;
+import services.Lab3Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -42,6 +48,7 @@ public class MainWindowController {
     @FXML private TextField textFieldB;
     private final Lab1Service lab1Service;
     private final Lab2Service lab2Service;
+    private final Lab3Service lab3Service;
     private Function<Void,Void> currentFilter;
     private Image originalImage;
     private Image toEditImage;
@@ -53,6 +60,7 @@ public class MainWindowController {
     public MainWindowController() {
         lab1Service = new Lab1Service();
         lab2Service = new Lab2Service();
+        lab3Service = new Lab3Service();
     }
 
     @FXML
@@ -355,5 +363,66 @@ public class MainWindowController {
         editedImage = ImageConverter.rgbImageToImage(coloredImage);
         editedImageView.setImage(editedImage);
         return null;
+    }
+
+    @FXML
+    public void identifyOutlineHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C6. Contur");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::identifyOutline;
+        currentFilter.apply(null);
+    }
+
+    @FXML
+    public void convertToBlackWhiteHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Convert to black and white");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::convertToBlackWhite;
+        currentFilter.apply(null);
+    }
+
+    private Void convertToBlackWhite(Void aVoid) {
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImage);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    private Void identifyOutline(Void aVoid) {
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final Outline outline = lab3Service.identifyOutline(blackWhiteImage);
+        // TODO: REMOVE NEXT LINES AFTER IMPLEMENTING THE OBSERVER
+        final Color outlineColor = Color.rgb(255, 0, 0);
+        final int height = blackWhiteImage.getHeight();
+        final int width = blackWhiteImage.getWidth();
+        final WritableImage writableImage = new WritableImage(width, height);
+        final PixelWriter pixelWriter = writableImage.getPixelWriter();
+        for (int x = 0; x < width; x++){
+            for (int y = 0; y < height; y++){
+                final boolean outlinePixel = outline.getMatrix()[y][x];
+                if (outlinePixel) {
+                    pixelWriter.setColor(x, y, outlineColor);
+                }
+                else {
+                    pixelWriter.setColor(x, y, toEditImage.getPixelReader().getColor(x, y));
+                }
+            }
+        }
+        editedImage = writableImage;
+        editedImageView.setImage(editedImage);
+
+        return null;
+    }
+
+    @FXML
+    public void identifySkeletonHandler(ActionEvent actionEvent) {
+    }
+
+    @FXML
+    public void slimHandler(ActionEvent actionEvent) {
     }
 }

@@ -1,11 +1,14 @@
 package converters;
 
+import domain.BlackWhiteImage;
 import domain.GreyscaleImage;
 import domain.RGBImage;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
+
+import static app.Main.L;
 
 public class ImageConverter {
     private ImageConverter() {}
@@ -38,6 +41,24 @@ public class ImageConverter {
         return rgbImage;
     }
 
+    public static BlackWhiteImage bufferedImageToBlackWhiteImage(final Image image) {
+        final int height = (int) image.getHeight();
+        final int width = (int) image.getWidth();
+        final BlackWhiteImage blackWhiteImage = new BlackWhiteImage(height, width);
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                final int argb = image.getPixelReader().getArgb(i, j);
+                final int red = (argb >> 16) & 0xff;
+                final int green = (argb >> 8) & 0xff;
+                final int blue = argb & 0xff;
+                final boolean value = (red + green + blue) / 3 > L / 2;
+                blackWhiteImage.setPixel(j, i, value);
+            }
+        }
+        return blackWhiteImage;
+    }
+
     public static Image rgbImageToImage(final RGBImage rgbImage) {
         final int height = rgbImage.getHeight();
         final int width = rgbImage.getWidth();
@@ -68,6 +89,23 @@ public class ImageConverter {
                 final int g = greyscaleImage.getMatrix()[y][x];
                 final int b = greyscaleImage.getMatrix()[y][x];
                 pixelWriter.setColor(x, y, Color.rgb(r, g, b));
+            }
+        }
+
+        return writableImage;
+    }
+
+    public static Image blackWhiteImageToImage(final BlackWhiteImage blackWhiteImage) {
+        final int height = blackWhiteImage.getHeight();
+        final int width = blackWhiteImage.getWidth();
+        final WritableImage writableImage = new WritableImage(width, height);
+        final PixelWriter pixelWriter = writableImage.getPixelWriter();
+
+        for (int x = 0; x < width; x++){
+            for (int y = 0; y < height; y++){
+                final boolean bwPixel = blackWhiteImage.getMatrix()[y][x];
+                final int rgbPixel = bwPixel ? L : 0;
+                pixelWriter.setColor(x, y, Color.rgb(rgbPixel, rgbPixel, rgbPixel));
             }
         }
 

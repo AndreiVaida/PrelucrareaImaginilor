@@ -34,12 +34,20 @@
                   <MenuItem mnemonicParsing="false" onAction="#bitExtractionHandler" text="C3. Bit extraction" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="laborator 2">
+            <Menu mnemonicParsing="false" text="Laborator 2">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#medianFilterHandler" text="C4. a.3) Filtrare mediană" />
                   <MenuItem mnemonicParsing="false" onAction="#invertContrastHandler" text="C5. d) Inversarea contrastului și scalarea statistică" />
                   <MenuItem mnemonicParsing="false" onAction="#pseudocolorImageHandler" text="C5. g) Pseudocolorarea imaginilor medicale" />
               </items>
+            </Menu>
+            <Menu mnemonicParsing="false" text="Laborator 3">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#convertToBlackWhiteHandler" text="To black and white" />
+                  <MenuItem mnemonicParsing="false" onAction="#identifyOutlineHandler" text="C6. Contur" />
+                  <MenuItem mnemonicParsing="false" onAction="#identifySkeletonHandler" text="C6. Schelet" />
+                  <MenuItem mnemonicParsing="false" onAction="#slimHandler" text="C6. Subțiere" />
+               </items>
             </Menu>
         </menus>
       </MenuBar>

@@ -9,6 +9,7 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+    public static final int L = 255;
 
     public static void main(String[] args) {
         launch(args);

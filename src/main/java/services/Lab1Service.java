@@ -4,9 +4,9 @@ import converters.ImageConverter;
 import domain.GreyscaleImage;
 import domain.RGBImage;
 
-public class Lab1Service {
-    private static final int L = 255;
+import static app.Main.L;
 
+public class Lab1Service {
     public GreyscaleImage convertToGrayscale(final RGBImage rgbImage) {
         final int height = rgbImage.getHeight();
         final int width = rgbImage.getWidth();
@@ -60,7 +60,7 @@ public class Lab1Service {
 
     private int increasePixelContrast(int pixel, final int a, final int b) {
         // accentuare netedă
-        pixel = (int) ((Math.sin(Math.PI*pixel/L - Math.PI/2) + 1) / 2 * L);
+        pixel = (int) ((Math.sin(Math.PI*pixel/ L - Math.PI/2) + 1) / 2 * L);
         return ImageConverter.clamp(pixel);
 
         // accentuare liniară
