@@ -23,6 +23,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import observer.ChangePixelEvent;
+import observer.Observer;
 import services.Lab1Service;
 import services.Lab2Service;
 import services.Lab3Service;
@@ -33,7 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.Function;
 
-public class MainWindowController {
+public class MainWindowController implements Observer {
     @FXML private AnchorPane mainAnchorPane;
     @FXML private ImageView toEditImageView;
     @FXML private ImageView editedImageView;
@@ -61,6 +63,7 @@ public class MainWindowController {
         lab1Service = new Lab1Service();
         lab2Service = new Lab2Service();
         lab3Service = new Lab3Service();
+        lab3Service.addObserver(this);
     }
 
     @FXML
@@ -375,6 +378,22 @@ public class MainWindowController {
         currentFilter.apply(null);
     }
 
+    private Void identifyOutline(Void aVoid) {
+        editedImage = ImageConverter.duplicateImage(toEditImage);
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final Outline outline = lab3Service.identifyOutline(blackWhiteImage);
+        lab3Service.animateOutline_LineByLine(outline, 3);
+        return null;
+    }
+
+    private void updateOnePixel(final int x, final int y, final Color color) {
+        final WritableImage writableImage = (WritableImage) editedImage;
+        final PixelWriter pixelWriter = writableImage.getPixelWriter();
+        pixelWriter.setColor(x, y, color);
+        editedImage = writableImage;
+        editedImageView.setImage(editedImage);
+    }
+
     @FXML
     public void convertToBlackWhiteHandler(ActionEvent actionEvent) {
         labelCurrentTransformationName.setText("Convert to black and white");
@@ -392,37 +411,16 @@ public class MainWindowController {
         return null;
     }
 
-    private Void identifyOutline(Void aVoid) {
-        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        final Outline outline = lab3Service.identifyOutline(blackWhiteImage);
-        // TODO: REMOVE NEXT LINES AFTER IMPLEMENTING THE OBSERVER
-        final Color outlineColor = Color.rgb(255, 0, 0);
-        final int height = blackWhiteImage.getHeight();
-        final int width = blackWhiteImage.getWidth();
-        final WritableImage writableImage = new WritableImage(width, height);
-        final PixelWriter pixelWriter = writableImage.getPixelWriter();
-        for (int x = 0; x < width; x++){
-            for (int y = 0; y < height; y++){
-                final boolean outlinePixel = outline.getMatrix()[y][x];
-                if (outlinePixel) {
-                    pixelWriter.setColor(x, y, outlineColor);
-                }
-                else {
-                    pixelWriter.setColor(x, y, toEditImage.getPixelReader().getColor(x, y));
-                }
-            }
-        }
-        editedImage = writableImage;
-        editedImageView.setImage(editedImage);
-
-        return null;
-    }
-
     @FXML
     public void identifySkeletonHandler(ActionEvent actionEvent) {
     }
 
     @FXML
     public void slimHandler(ActionEvent actionEvent) {
+    }
+
+    @Override
+    public void notifyOnEvent(final ChangePixelEvent changePixelEvent) {
+        updateOnePixel(changePixelEvent.getX(), changePixelEvent.getY(), changePixelEvent.getColor());
     }
 }

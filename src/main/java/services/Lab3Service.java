@@ -2,8 +2,22 @@ package services;
 
 import domain.BlackWhiteImage;
 import domain.Outline;
+import javafx.scene.paint.Color;
+import observer.ChangePixelEvent;
+import observer.Observable;
+import observer.Observer;
 
-public class Lab3Service {
+import java.util.HashSet;
+import java.util.Set;
+
+public class Lab3Service implements Observable {
+    private final Set<Observer> observers;
+    private final Color outlineColor;
+
+    public Lab3Service() {
+        observers = new HashSet<>();
+        outlineColor = Color.rgb(255, 0, 0);
+    }
 
     public Outline identifyOutline(final BlackWhiteImage blackWhiteImage) {
         final int height = blackWhiteImage.getHeight();
@@ -40,8 +54,8 @@ public class Lab3Service {
         // build the neighbor matrix
         for (int i = 0; i < matrixSize; i++) {
             for (int j = 0; j < matrixSize; j++) {
-                final int imgI = line + i - (matrixSize-1)/2;
-                final int imgJ = column + j - (matrixSize-1)/2;
+                final int imgI = line + i - (matrixSize - 1) / 2;
+                final int imgJ = column + j - (matrixSize - 1) / 2;
 
                 if (imgI < 0 || imgJ < 0 || imgI >= image.length || imgJ >= image[0].length) {
                     neighborMatrix[i][j] = false;
@@ -52,5 +66,110 @@ public class Lab3Service {
         }
 
         return neighborMatrix;
+    }
+
+    public void animateOutline_Standard(final Outline outline, final int speed) {
+        new Thread(() -> {
+            final int height = outline.getHeight();
+            final int width = outline.getWidth();
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    final boolean outlinePixel = outline.getMatrix()[y][x];
+                    if (outlinePixel) {
+                        notifyObservers(new ChangePixelEvent(x, y, outlineColor));
+                        try {
+                            Thread.sleep(speed);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }).start();
+    }
+
+    public void animateOutline_LineByLine(final Outline outline, final int millisToSleep) {
+        final Outline outlineCopy = new Outline(outline);
+        new Thread(() -> {
+            final int height = outlineCopy.getHeight();
+            final int width = outlineCopy.getWidth();
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    final boolean outlinePixel = outlineCopy.getMatrix()[y][x];
+                    if (outlinePixel) {
+                        goTroughOutlineThenRemoveIt(outlineCopy, y, x, millisToSleep);
+                    }
+                }
+            }
+        }).start();
+    }
+
+    /**
+     * [y,x] - beginning of the outline
+     * Go through the outline after reaching it's end. Priority direction: right -> down -> left -> up.
+     * Notify observers at every outline pixel, then sleep millisToSleep.
+     */
+    private void goTroughOutlineThenRemoveIt(final Outline outline, final int y, final int x, final int millisToSleep) {
+        // notify observers that at [y,x] is outline
+        notifyObservers(new ChangePixelEvent(x, y, outlineColor));
+        try {
+            Thread.sleep(millisToSleep);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // delete [y,x] outline pixel
+        outline.getMatrix()[y][x] = false;
+
+        // search right for outline
+        if (x+1 < outline.getWidth() && outline.getMatrix()[y][x+1]) {
+            goTroughOutlineThenRemoveIt(outline, y, x+1, millisToSleep);
+            return;
+        }
+        if (y+1 < outline.getHeight() && x+1 < outline.getWidth() && outline.getMatrix()[y+1][x+1]) {
+            goTroughOutlineThenRemoveIt(outline, y+1, x+1, millisToSleep);
+            return;
+        }
+        // search bottom for outline
+        if (y+1 < outline.getHeight() && outline.getMatrix()[y+1][x]) {
+            goTroughOutlineThenRemoveIt(outline, y+1, x, millisToSleep);
+            return;
+        }
+        if (y+1 < outline.getHeight() && x-1 >= 0 && outline.getMatrix()[y+1][x-1]) {
+            goTroughOutlineThenRemoveIt(outline, y+1, x-1, millisToSleep);
+            return;
+        }
+        // search left for outline
+        if (x-1 >= 0 && outline.getMatrix()[y][x-1]) {
+            goTroughOutlineThenRemoveIt(outline, y, x-1, millisToSleep);
+            return;
+        }
+        if (y-1 >= 0 && x-1 >= 0 && outline.getMatrix()[y-1][x-1]) {
+            goTroughOutlineThenRemoveIt(outline, y-1, x-1, millisToSleep);
+            return;
+        }
+        // search above for outline
+        if (y-1 >= 0 && outline.getMatrix()[y-1][x]) {
+            goTroughOutlineThenRemoveIt(outline, y-1, x, millisToSleep);
+            return;
+        }
+        if (y-1 >= 0 && x+1 < outline.getWidth() && outline.getMatrix()[y-1][x+1]) {
+            goTroughOutlineThenRemoveIt(outline, y-1, x+1, millisToSleep);
+            return;
+        }
+    }
+
+    @Override
+    public void notifyObservers(final ChangePixelEvent changePixelEvent) {
+        for (Observer observer : observers) {
+            observer.notifyOnEvent(changePixelEvent);
+        }
+    }
+
+    @Override
+    public void addObserver(final Observer observer) {
+        this.observers.add(observer);
     }
 }

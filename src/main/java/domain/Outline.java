@@ -22,6 +22,15 @@ public class Outline {
         height = matrix[0].length;
     }
 
+    public Outline(final Outline outline) {
+        matrix = new boolean[outline.height][outline.width];
+        width = matrix.length;
+        height = matrix[0].length;
+        for (int i = 0; i < height; i++) {
+            System.arraycopy(outline.matrix[i], 0, matrix[i], 0, width);
+        }
+    }
+
     public void setPixel(final int line, final int column, final boolean value) {
         matrix[line][column] = value;
     }

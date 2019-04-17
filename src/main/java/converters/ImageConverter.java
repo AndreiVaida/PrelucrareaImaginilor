@@ -111,4 +111,23 @@ public class ImageConverter {
 
         return writableImage;
     }
+
+    public static Image duplicateImage(final Image image) {
+        final int width = (int) image.getWidth();
+        final int height = (int) image.getHeight();
+        final WritableImage writableImage = new WritableImage(width, height);
+        final PixelWriter pixelWriter = writableImage.getPixelWriter();
+
+        for (int x = 0; x < width; x++){
+            for (int y = 0; y < height; y++){
+                final int argb = image.getPixelReader().getArgb(x, y);
+                final int red = (argb >> 16) & 0xff;
+                final int green = (argb >> 8) & 0xff;
+                final int blue = argb & 0xff;
+                pixelWriter.setColor(x, y, Color.rgb(red, green, blue));
+            }
+        }
+
+        return writableImage;
+    }
 }
