@@ -303,7 +303,7 @@ public class Lab3Service implements Observable {
             for (int j = 0; j < skeleton.getWidth(); j++) {
                 if (skeleton.getMatrix()[i][j] == skeleton.getMaxHeight()) {
                     final int[][] neighbors = getNeighborPixels(skeleton.getMatrix(), 3, i, j);
-                    if (getNrOfIdenticalNeighbors(neighbors) >= 2) {
+                    if (getNrOfIdenticalNeighbors(neighbors) < 2) {
                         return true;
                     }
                 }

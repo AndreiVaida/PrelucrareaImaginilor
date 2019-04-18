@@ -39,6 +39,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.Function;
 
+import static app.Main.L;
+
 public class MainWindowController implements Observer {
     private final Lab1Service lab1Service;
     private final Lab2Service lab2Service;
@@ -473,7 +475,7 @@ public class MainWindowController implements Observer {
     private Void identifySkeleton_Animate(Void aVoid) {
         editedImage = ImageConverter.duplicateImage(toEditImage);
         final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        new Thread(() -> lab3Service.identifySkeleton_Animate(blackWhiteImage, 100)).start();
+        new Thread(() -> lab3Service.identifySkeleton_Animate(blackWhiteImage, 20)).start();
         return null;
     }
 
@@ -540,17 +542,13 @@ public class MainWindowController implements Observer {
             updateOnePixel(changePixelEvent.getX(), changePixelEvent.getY(), changePixelEvent.getColor());
         }
         if (event instanceof SkeletonFinishedEvent) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             final SkeletonFinishedEvent skeletonFinishedEvent = (SkeletonFinishedEvent) event;
             fillSkeleton(skeletonFinishedEvent.getSkeleton());
         }
     }
-
-    class AsyncController extends Task<Void> {
-        @Override
-        protected Void call() throws Exception {
-            currentFilter.apply(null);
-            return null;
-        }
-    }
-
 }
