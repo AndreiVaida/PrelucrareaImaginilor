@@ -1,5 +1,5 @@
 package observer;
 
 public interface Observer {
-    void notifyOnEvent(final ChangePixelEvent changePixelEvent);
+    void notifyOnEvent(final Event event);
 }

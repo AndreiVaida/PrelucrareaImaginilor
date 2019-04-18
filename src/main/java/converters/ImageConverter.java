@@ -130,4 +130,17 @@ public class ImageConverter {
 
         return writableImage;
     }
+
+    public static GreyscaleImage blackWhiteImageToGreyscaleImage(final BlackWhiteImage blackWhiteImage) {
+        final int height = blackWhiteImage.getHeight();
+        final int width = blackWhiteImage.getWidth();
+        final GreyscaleImage greyscaleImage = new GreyscaleImage(height, width);
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                greyscaleImage.setPixel(i, j, blackWhiteImage.getMatrix()[i][j] ? 1 : 0);
+            }
+        }
+        return greyscaleImage;
+    }
 }

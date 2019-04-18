@@ -5,25 +5,26 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GreyscaleImage {
+public class Skeleton {
     private int height;
     private int width;
     private int[][] matrix;
+    private int maxHeight = 0;
 
-    public GreyscaleImage(final int height, final int width) {
+    public Skeleton(final int height, final int width) {
         this.height = height;
         this.width = width;
         matrix = new int[height][width];
     }
 
-    public GreyscaleImage(final GreyscaleImage greyscaleImage) {
-        height = greyscaleImage.height;
-        width = greyscaleImage.width;
-        matrix = new int[height][width];
+    public Skeleton(final int[][] matrix) {
+        this.height = matrix.length;
+        this.width = matrix[0].length;
+        this.matrix = new int[height][width];
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                matrix[i][j] = greyscaleImage.matrix[i][j];
+                this.matrix[i][j] = matrix[i][j];
             }
         }
     }
