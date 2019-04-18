@@ -1,8 +1,12 @@
 package controllers;
 
 import converters.ImageConverter;
+import domain.BlackWhiteImage;
 import domain.GreyscaleImage;
+import domain.Outline;
 import domain.RGBImage;
+import domain.Skeleton;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -11,15 +15,23 @@ import javafx.scene.control.Slider;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import observer.ChangePixelEvent;
+import observer.Event;
+import observer.Observer;
+import observer.SkeletonFinishedEvent;
 import services.Lab1Service;
 import services.Lab2Service;
+import services.Lab3Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -27,22 +39,37 @@ import java.io.File;
 import java.io.IOException;
 import java.util.function.Function;
 
-public class MainWindowController {
-    @FXML private AnchorPane mainAnchorPane;
-    @FXML private ImageView toEditImageView;
-    @FXML private ImageView editedImageView;
-    @FXML private Label labelCurrentTransformationName;
-    @FXML private HBox containerA;
-    @FXML private HBox containerB;
-    @FXML private Slider sliderA;
-    @FXML private Slider sliderB;
-    @FXML private Label labelASlider;
-    @FXML private Label labelBSlider;
-    @FXML private TextField textFieldA;
-    @FXML private TextField textFieldB;
+import static app.Main.L;
+
+public class MainWindowController implements Observer {
     private final Lab1Service lab1Service;
     private final Lab2Service lab2Service;
-    private Function<Void,Void> currentFilter;
+    private final Lab3Service lab3Service;
+    @FXML
+    private AnchorPane mainAnchorPane;
+    @FXML
+    private ImageView toEditImageView;
+    @FXML
+    private ImageView editedImageView;
+    @FXML
+    private Label labelCurrentTransformationName;
+    @FXML
+    private HBox containerA;
+    @FXML
+    private HBox containerB;
+    @FXML
+    private Slider sliderA;
+    @FXML
+    private Slider sliderB;
+    @FXML
+    private Label labelASlider;
+    @FXML
+    private Label labelBSlider;
+    @FXML
+    private TextField textFieldA;
+    @FXML
+    private TextField textFieldB;
+    private Function<Void, Void> currentFilter;
     private Image originalImage;
     private Image toEditImage;
     private Image editedImage;
@@ -53,6 +80,8 @@ public class MainWindowController {
     public MainWindowController() {
         lab1Service = new Lab1Service();
         lab2Service = new Lab2Service();
+        lab3Service = new Lab3Service();
+        lab3Service.addObserver(this);
     }
 
     @FXML
@@ -88,7 +117,8 @@ public class MainWindowController {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 sliderA.setValue(a);
             }
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) {
+        }
     }
 
     public void changeBTextFieldHandler(final KeyEvent keyEvent) {
@@ -97,7 +127,8 @@ public class MainWindowController {
             if (keyEvent.getCode() == KeyCode.ENTER) {
                 sliderB.setValue(b);
             }
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) {
+        }
     }
 
     private File openFileChooser() {
@@ -129,8 +160,12 @@ public class MainWindowController {
         final File theatre = new File("./src/main/resources/images/Teatrul (low res).jpg");
         final File talisman = new File("./src/main/resources/images/Talisman (low res).jpg");
         final File biomedicalImage = new File("./src/main/resources/images/Radiografie (low res).jpg");
+        final File apple = new File("./src/main/resources/images/Apple logo inverted.png");
+        final File arrow = new File("./src/main/resources/images/left-arrow-inverted.jpg");
+        final File bone = new File("./src/main/resources/images/bone.jpg");
+        final File f = new File("./src/main/resources/images/F.jpg");
         try {
-            loadImage(theatre);
+            loadImage(f);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -355,5 +390,165 @@ public class MainWindowController {
         editedImage = ImageConverter.rgbImageToImage(coloredImage);
         editedImageView.setImage(editedImage);
         return null;
+    }
+
+    @FXML
+    public void identifyOutlineHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C6. Contur");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::identifyOutlineAndAnimate;
+        currentFilter.apply(null);
+    }
+
+    private Void identifyOutlineAndAnimate(Void aVoid) {
+        editedImage = ImageConverter.duplicateImage(toEditImage);
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final Outline outline = lab3Service.identifyOutline(blackWhiteImage);
+        lab3Service.animateOutline_LineByLine(outline, 3);
+        return null;
+    }
+
+    private void updateOnePixel(final int x, final int y, final Color color) {
+        final WritableImage writableImage = (WritableImage) editedImage;
+        final PixelWriter pixelWriter = writableImage.getPixelWriter();
+        pixelWriter.setColor(x, y, color);
+        editedImage = writableImage;
+        editedImageView.setImage(editedImage);
+    }
+
+    @FXML
+    public void convertToBlackWhiteHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Convert to black and white");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::convertToBlackWhite;
+        currentFilter.apply(null);
+    }
+
+    private Void convertToBlackWhite(Void aVoid) {
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImage);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    @FXML
+    public void identifySkeletonHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C6. Schelet");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::identifySkeleton_Animate;
+        currentFilter.apply(null);
+    }
+
+    private Void identifySkeleton(Void aVoid) {
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final Skeleton skeleton = lab3Service.identifySkeleton(blackWhiteImage);
+        // draw skeleton over image
+        final int width = skeleton.getWidth();
+        final int height = skeleton.getHeight();
+        final WritableImage writableImage = new WritableImage(width, height);
+        final PixelWriter pixelWriter = writableImage.getPixelWriter();
+        final Color color = Color.rgb(0, 255, 0);
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                pixelWriter.setColor(x, y, toEditImage.getPixelReader().getColor(x, y));
+                if (skeleton.getMatrix()[y][x] == skeleton.getMaxHeight()) {
+                    pixelWriter.setColor(x, y, color);
+                }
+            }
+        }
+        editedImage = writableImage;
+        editedImageView.setImage(editedImage);
+
+        // fill
+        fillSkeleton(skeleton);
+
+        return null;
+    }
+
+    private Void identifySkeleton_Animate(Void aVoid) {
+        editedImage = ImageConverter.duplicateImage(toEditImage);
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        new Thread(() -> lab3Service.identifySkeleton_Animate(blackWhiteImage, 20)).start();
+        return null;
+    }
+
+    private void fillSkeleton(final Skeleton skeleton) {
+        final int radius = skeleton.getMaxHeight();
+        final Color circleColor = Color.rgb(0, 0, 255);
+        for (int i = 0; i < skeleton.getHeight(); i++) {
+            for (int j = 0; j < skeleton.getWidth(); j++) {
+                if (skeleton.getMatrix()[i][j] == skeleton.getMaxHeight()) {
+                    addCircleToImage(i, j, circleColor, radius);
+                }
+            }
+        }
+    }
+
+    private void addCircleToImage(final int x, final int y, final Color colorToAdd, final int radius) {
+        final WritableImage writableImage = (WritableImage) editedImage;
+        final PixelWriter pixelWriter = writableImage.getPixelWriter();
+        final int piR2 = (int) (Math.PI * (Math.pow(radius, 2)));
+
+        for (int i = y - radius; i < y + radius; i++) {
+            for (int j = x - radius; j < x + radius; j++) {
+                if (i < 0 || j < 0 || i > writableImage.getHeight() || j > writableImage.getWidth()) {
+                    continue;
+                }
+
+                if (pixelIsInCircle(j, i, x, y, radius)) {
+                    pixelWriter.setColor(i, j, colorToAdd);
+                }
+            }
+        }
+        editedImage = writableImage;
+        editedImageView.setImage(editedImage);
+    }
+
+    private boolean pixelIsInCircle(final int xPixel, final int yPixel, final int xCenter, final int yCenter, final int radius) {
+        final int distanceFromCenter = (int) Math.sqrt(Math.pow(xPixel-xCenter, 2) + Math.pow(yPixel-yCenter, 2));
+        return distanceFromCenter <= radius;
+    }
+
+    @FXML
+    public void slimHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C6. Contur");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::slimImage;
+        currentFilter.apply(null);
+    }
+
+    private Void slimImage(Void aVoid) {
+        editedImage = ImageConverter.duplicateImage(toEditImage);
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        lab3Service.slimImage_Animate(blackWhiteImage, 100);
+        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImage);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    @Override
+    public void notifyOnEvent(final Event event) {
+        if (event instanceof ChangePixelEvent) {
+            final ChangePixelEvent changePixelEvent = (ChangePixelEvent) event;
+            updateOnePixel(changePixelEvent.getX(), changePixelEvent.getY(), changePixelEvent.getColor());
+        }
+        if (event instanceof SkeletonFinishedEvent) {
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            final SkeletonFinishedEvent skeletonFinishedEvent = (SkeletonFinishedEvent) event;
+            fillSkeleton(skeletonFinishedEvent.getSkeleton());
+        }
     }
 }
