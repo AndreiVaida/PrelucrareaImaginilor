@@ -303,7 +303,7 @@ public class Lab3Service implements Observable {
             for (int j = 0; j < skeleton.getWidth(); j++) {
                 if (skeleton.getMatrix()[i][j] == skeleton.getMaxHeight()) {
                     final int[][] neighbors = getNeighborPixels(skeleton.getMatrix(), 3, i, j);
-                    if (!pixelHasAtLeast2IdenticalNeighbors(neighbors)) {
+                    if (getNrOfIdenticalNeighbors(neighbors) >= 2) {
                         return true;
                     }
                 }
@@ -394,7 +394,7 @@ public class Lab3Service implements Observable {
      * @param neighbors - 3x3 matrix
      * Consider only 4 neighbors: up, down, left, right
      */
-    private boolean pixelHasAtLeast2IdenticalNeighbors(final int[][] neighbors) {
+    private int getNrOfIdenticalNeighbors(final int[][] neighbors) {
         int nrOfIdenticalNeighbors = 0;
         final int pixel = neighbors[1][1];
         if (neighbors[0][1] == pixel) {
@@ -409,6 +409,99 @@ public class Lab3Service implements Observable {
         if (neighbors[1][2] == pixel) {
             nrOfIdenticalNeighbors++;
         }
-        return  nrOfIdenticalNeighbors >= 2;
+        return nrOfIdenticalNeighbors;
+    }
+
+    /**
+     * @param neighbors - 3x3 matrix
+     * Consider all 8 neighbors
+     */
+    private int getNrOfIdenticalNeighbors(final boolean[][] neighbors) {
+        int nrOfIdenticalNeighbors = 0;
+        final boolean pixel = neighbors[1][1];
+        // up
+        if (neighbors[0][1] == pixel) {
+            nrOfIdenticalNeighbors++;
+        }
+        if (neighbors[0][2] == pixel) {
+            nrOfIdenticalNeighbors++;
+        }
+        // right
+        if (neighbors[2][1] == pixel) {
+            nrOfIdenticalNeighbors++;
+        }
+        if (neighbors[2][2] == pixel) {
+            nrOfIdenticalNeighbors++;
+        }
+        // down
+        if (neighbors[1][0] == pixel) {
+            nrOfIdenticalNeighbors++;
+        }
+        if (neighbors[2][0] == pixel) {
+            nrOfIdenticalNeighbors++;
+        }
+        // left
+        if (neighbors[1][2] == pixel) {
+            nrOfIdenticalNeighbors++;
+        }
+        if (neighbors[0][0] == pixel) {
+            nrOfIdenticalNeighbors++;
+        }
+        return nrOfIdenticalNeighbors;
+    }
+
+    public void slimImage(final BlackWhiteImage blackWhiteImage) {
+        boolean canSlim = true;
+        while (canSlim) {
+            final BlackWhiteImage blackWhiteImageCopy = new BlackWhiteImage(blackWhiteImage);
+            for (int i = 0; i < blackWhiteImage.getHeight(); i++) {
+                for (int j = 0; j < blackWhiteImage.getWidth(); j++) {
+                    if (!blackWhiteImage.getMatrix()[i][j]) {
+                        continue;
+                    }
+
+                    final boolean[][] neighbors = getNeighborPixels(blackWhiteImage.getMatrix(), 3, i, j);
+                    final int nrOfOneNeighbors = getNrOfIdenticalNeighbors(neighbors);
+                    if (nrOfOneNeighbors >= 2 && nrOfOneNeighbors <= 6) {
+                        blackWhiteImageCopy.setPixel(i, j, false);
+                    }
+                    else {
+                        canSlim = false;
+                    }
+                }
+            }
+            blackWhiteImage.setMatrix(blackWhiteImageCopy.getMatrix());
+        }
+    }
+
+    public void slimImage_Animate(final BlackWhiteImage blackWhiteImage, final int millisToSleep) {
+        new Thread(() -> {
+            boolean canSlim = true;
+            while (canSlim) {
+                canSlim = false;
+                final BlackWhiteImage blackWhiteImageCopy = new BlackWhiteImage(blackWhiteImage);
+                for (int i = 0; i < blackWhiteImage.getHeight(); i++) {
+                    for (int j = 0; j < blackWhiteImage.getWidth(); j++) {
+                        if (!blackWhiteImage.getMatrix()[i][j]) {
+                            continue;
+                        }
+
+                        final boolean[][] neighbors = getNeighborPixels(blackWhiteImage.getMatrix(), 3, i, j);
+                        final int nrOfOneNeighbors = getNrOfIdenticalNeighbors(neighbors);
+                        if (nrOfOneNeighbors >= 2 && nrOfOneNeighbors <= 6) {
+                            blackWhiteImageCopy.setPixel(i, j, false);
+                            notifyObservers(new ChangePixelEvent(j, i, Color.rgb(0,0,0)));
+                            canSlim = true;
+                            try {
+                                Thread.sleep(millisToSleep);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+                blackWhiteImage.setMatrix(blackWhiteImageCopy.getMatrix());
+            }
+        }).start();
     }
 }

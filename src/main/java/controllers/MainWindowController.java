@@ -1,12 +1,12 @@
 package controllers;
 
-import app.Main;
 import converters.ImageConverter;
 import domain.BlackWhiteImage;
 import domain.GreyscaleImage;
 import domain.Outline;
 import domain.RGBImage;
 import domain.Skeleton;
+import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -38,8 +38,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Function;
-
-import static app.Main.L;
 
 public class MainWindowController implements Observer {
     private final Lab1Service lab1Service;
@@ -518,6 +516,21 @@ public class MainWindowController implements Observer {
 
     @FXML
     public void slimHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C6. Contur");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::slimImage;
+        currentFilter.apply(null);
+    }
+
+    private Void slimImage(Void aVoid) {
+        editedImage = ImageConverter.duplicateImage(toEditImage);
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        lab3Service.slimImage_Animate(blackWhiteImage, 1);
+        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImage);
+        editedImageView.setImage(editedImage);
+        return null;
     }
 
     @Override
@@ -529,6 +542,14 @@ public class MainWindowController implements Observer {
         if (event instanceof SkeletonFinishedEvent) {
             final SkeletonFinishedEvent skeletonFinishedEvent = (SkeletonFinishedEvent) event;
             fillSkeleton(skeletonFinishedEvent.getSkeleton());
+        }
+    }
+
+    class AsyncController extends Task<Void> {
+        @Override
+        protected Void call() throws Exception {
+            currentFilter.apply(null);
+            return null;
         }
     }
 
