@@ -488,15 +488,13 @@ public class Lab3Service implements Observable {
 
                         final boolean[][] neighbors = getNeighborPixels(blackWhiteImage.getMatrix(), 3, i, j);
                         final int nrOfOneNeighbors = getNrOfIdenticalNeighbors(neighbors);
-                        if (nrOfOneNeighbors >= 2 && nrOfOneNeighbors <= 6) {
+                        if (nrOfOneNeighbors > 2 && nrOfOneNeighbors <= 6) {
                             blackWhiteImageCopy.setPixel(i, j, false);
                             notifyObservers(new ChangePixelEvent(j, i, Color.rgb(0,0,0)));
                             canSlim = true;
-                            try {
-                                Thread.sleep(millisToSleep);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
+                            // sleep
+                            long start = System.nanoTime();
+                            while(System.nanoTime() - start < millisToSleep * 5000);
                         }
                     }
                 }

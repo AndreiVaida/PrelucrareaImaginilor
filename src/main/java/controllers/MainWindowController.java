@@ -529,7 +529,7 @@ public class MainWindowController implements Observer {
     private Void slimImage(Void aVoid) {
         editedImage = ImageConverter.duplicateImage(toEditImage);
         final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        lab3Service.slimImage_Animate(blackWhiteImage, 1);
+        lab3Service.slimImage_Animate(blackWhiteImage, 100);
         editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImage);
         editedImageView.setImage(editedImage);
         return null;
