@@ -453,6 +453,7 @@ public class Lab3Service implements Observable {
     public void slimImage(final BlackWhiteImage blackWhiteImage) {
         boolean canSlim = true;
         while (canSlim) {
+            canSlim = false;
             final BlackWhiteImage blackWhiteImageCopy = new BlackWhiteImage(blackWhiteImage);
             for (int i = 0; i < blackWhiteImage.getHeight(); i++) {
                 for (int j = 0; j < blackWhiteImage.getWidth(); j++) {
@@ -462,11 +463,10 @@ public class Lab3Service implements Observable {
 
                     final boolean[][] neighbors = getNeighborPixels(blackWhiteImage.getMatrix(), 3, i, j);
                     final int nrOfOneNeighbors = getNrOfIdenticalNeighbors(neighbors);
-                    if (nrOfOneNeighbors >= 2 && nrOfOneNeighbors <= 6) {
+                    if (nrOfOneNeighbors > 2 && nrOfOneNeighbors <= 6) {
                         blackWhiteImageCopy.setPixel(i, j, false);
-                    }
-                    else {
-                        canSlim = false;
+                        notifyObservers(new ChangePixelEvent(j, i, Color.rgb(0,0,0)));
+                        canSlim = true;
                     }
                 }
             }
