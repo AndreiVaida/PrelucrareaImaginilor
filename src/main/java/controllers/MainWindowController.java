@@ -32,6 +32,7 @@ import observer.SkeletonFinishedEvent;
 import services.Lab1Service;
 import services.Lab2Service;
 import services.Lab3Service;
+import services.Lab4Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -45,6 +46,7 @@ public class MainWindowController implements Observer {
     private final Lab1Service lab1Service;
     private final Lab2Service lab2Service;
     private final Lab3Service lab3Service;
+    private final Lab4Service lab4Service;
     @FXML
     private AnchorPane mainAnchorPane;
     @FXML
@@ -81,6 +83,7 @@ public class MainWindowController implements Observer {
         lab1Service = new Lab1Service();
         lab2Service = new Lab2Service();
         lab3Service = new Lab3Service();
+        lab4Service = new Lab4Service();
         lab3Service.addObserver(this);
     }
 
@@ -550,5 +553,41 @@ public class MainWindowController implements Observer {
             final SkeletonFinishedEvent skeletonFinishedEvent = (SkeletonFinishedEvent) event;
             fillSkeleton(skeletonFinishedEvent.getSkeleton());
         }
+    }
+
+    @FXML
+    public void erosionHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Eroziune");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::erosion;
+        currentFilter.apply(null);
+    }
+
+    private Void erosion(Void aVoid) {
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final BlackWhiteImage blackWhiteImageEroded = lab4Service.erosionBW(blackWhiteImage);
+        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImageEroded);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    @FXML
+    public void dilationHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Dilatare");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::dilation;
+        currentFilter.apply(null);
+    }
+
+    private Void dilation(Void aVoid) {
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final BlackWhiteImage blackWhiteImageEroded = lab4Service.dilationBW(blackWhiteImage);
+        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImageEroded);
+        editedImageView.setImage(editedImage);
+        return null;
     }
 }

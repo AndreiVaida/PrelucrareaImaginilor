@@ -49,6 +49,12 @@
                   <MenuItem mnemonicParsing="false" onAction="#slimHandler" text="C6. Subțiere" />
                </items>
             </Menu>
+            <Menu mnemonicParsing="false" text="Laborator 4">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#erosionHandler" text="Eroziune" />
+                  <MenuItem mnemonicParsing="false" onAction="#dilationHandler" text="Dilatare" />
+               </items>
+            </Menu>
         </menus>
       </MenuBar>
       <VBox layoutX="14.0" layoutY="36.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="34.0">
