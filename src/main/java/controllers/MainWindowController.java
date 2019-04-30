@@ -6,7 +6,6 @@ import domain.GreyscaleImage;
 import domain.Outline;
 import domain.RGBImage;
 import domain.Skeleton;
-import javafx.concurrent.Task;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -39,8 +38,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.function.Function;
-
-import static app.Main.L;
 
 public class MainWindowController implements Observer {
     private final Lab1Service lab1Service;
@@ -556,16 +553,16 @@ public class MainWindowController implements Observer {
     }
 
     @FXML
-    public void erosionHandler(ActionEvent actionEvent) {
-        labelCurrentTransformationName.setText("Eroziune");
+    public void erosionBWHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Eroziune (alb-negru)");
         changedByUser = false;
         disableSliders();
         changedByUser = true;
-        currentFilter = this::erosion;
+        currentFilter = this::erosionBW;
         currentFilter.apply(null);
     }
 
-    private Void erosion(Void aVoid) {
+    private Void erosionBW(Void aVoid) {
         final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
         final BlackWhiteImage blackWhiteImageEroded = lab4Service.erosionBW(blackWhiteImage);
         editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImageEroded);
@@ -574,19 +571,91 @@ public class MainWindowController implements Observer {
     }
 
     @FXML
-    public void dilationHandler(ActionEvent actionEvent) {
-        labelCurrentTransformationName.setText("Dilatare");
+    public void dilationBWHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Dilatare (alb-negru)");
         changedByUser = false;
         disableSliders();
         changedByUser = true;
-        currentFilter = this::dilation;
+        currentFilter = this::dilationBW;
         currentFilter.apply(null);
     }
 
-    private Void dilation(Void aVoid) {
+    private Void dilationBW(Void aVoid) {
         final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
         final BlackWhiteImage blackWhiteImageEroded = lab4Service.dilationBW(blackWhiteImage);
         editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImageEroded);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    @FXML
+    public void erosionGreyscaleHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Eroziune (greyscale)");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::erosionGreyscale;
+        currentFilter.apply(null);
+    }
+
+    private Void erosionGreyscale(Void aVoid) {
+        final GreyscaleImage greyscaleImage = lab1Service.convertToGrayscale(ImageConverter.bufferedImageToRgbImage(toEditImage));
+        final GreyscaleImage greyscaleImageEroded = lab4Service.erosionGreyscale(greyscaleImage);
+        editedImage = ImageConverter.grayscaleImageToImage(greyscaleImageEroded);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    @FXML
+    public void dilationGreyscaleHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("Dilatare (greyscale)");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::dilationGreyscale;
+        currentFilter.apply(null);
+    }
+
+    private Void dilationGreyscale(Void aVoid) {
+        final GreyscaleImage greyscaleImage = lab1Service.convertToGrayscale(ImageConverter.bufferedImageToRgbImage(toEditImage));
+        final GreyscaleImage greyscaleImageEroded = lab4Service.dilationGreyscale(greyscaleImage);
+        editedImage = ImageConverter.grayscaleImageToImage(greyscaleImageEroded);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    @FXML
+    public void determineContourHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C7. d) Determinarea conturului");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::determineContour;
+        currentFilter.apply(null);
+    }
+
+    private Void determineContour(Void aVoid) {
+        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final BlackWhiteImage blackWhiteImageEroded = lab4Service.determineContour(blackWhiteImage);
+        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImageEroded);
+        editedImageView.setImage(editedImage);
+        return null;
+    }
+
+    @FXML
+    public void texturalSegmentationHandler(ActionEvent actionEvent) {
+        labelCurrentTransformationName.setText("C8. f) Segmentare textuală");
+        changedByUser = false;
+        disableSliders();
+        changedByUser = true;
+        currentFilter = this::texturalSegmentation;
+        currentFilter.apply(null);
+    }
+
+    private Void texturalSegmentation(Void aVoid) {
+        final GreyscaleImage greyscaleImage = lab1Service.convertToGrayscale(ImageConverter.bufferedImageToRgbImage(toEditImage));
+        final GreyscaleImage greyscaleImageSegmented = lab4Service.texturalSegmentation(greyscaleImage);
+        editedImage = ImageConverter.grayscaleImageToImage(greyscaleImageSegmented);
         editedImageView.setImage(editedImage);
         return null;
     }

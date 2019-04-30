@@ -51,8 +51,12 @@
             </Menu>
             <Menu mnemonicParsing="false" text="Laborator 4">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#erosionHandler" text="Eroziune" />
-                  <MenuItem mnemonicParsing="false" onAction="#dilationHandler" text="Dilatare" />
+                  <MenuItem mnemonicParsing="false" onAction="#erosionBWHandler" text="Eroziune (alb-negru)" />
+                  <MenuItem mnemonicParsing="false" onAction="#dilationBWHandler" text="Dilatare (alb-negru)" />
+                  <MenuItem mnemonicParsing="false" onAction="#erosionGreyscaleHandler" text="Eroziune (greyscale)" />
+                  <MenuItem mnemonicParsing="false" onAction="#dilationGreyscaleHandler" text="Dilatare (greyscale)" />
+                  <MenuItem mnemonicParsing="false" onAction="#determineContourHandler" text="C7. d) Determinarea conturului" />
+                  <MenuItem mnemonicParsing="false" onAction="#texturalSegmentationHandler" text="C8. f) Segmentare texturală" />
                </items>
             </Menu>
         </menus>
