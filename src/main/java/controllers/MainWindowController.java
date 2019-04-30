@@ -163,9 +163,10 @@ public class MainWindowController implements Observer {
         final File apple = new File("./src/main/resources/images/Apple logo inverted.png");
         final File arrow = new File("./src/main/resources/images/left-arrow-inverted.jpg");
         final File bone = new File("./src/main/resources/images/bone.jpg");
+        final File oldPhotograpther_saltAndPepper = new File("./src/main/resources/images/saltnpaperp3.jpg");
         final File f = new File("./src/main/resources/images/F.jpg");
         try {
-            loadImage(f);
+            loadImage(oldPhotograpther_saltAndPepper);
         } catch (IOException e) {
             e.printStackTrace();
         }

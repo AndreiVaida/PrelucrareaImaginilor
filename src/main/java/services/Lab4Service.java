@@ -192,7 +192,7 @@ public class Lab4Service {
     public BlackWhiteImage determineContour(final BlackWhiteImage blackWhiteImage) {
         final StructuralElementBW structuralElement = createDefaultStructuralElementBW_contourDetermination();
         final BlackWhiteImage erodedImage = erosionBW(blackWhiteImage, structuralElement);
-        return substractImageAndDrawOutline(blackWhiteImage, erodedImage);
+        return substractImage(blackWhiteImage, erodedImage);
     }
 
     public GreyscaleImage texturalSegmentation(final GreyscaleImage greyscaleImage) {
@@ -200,8 +200,7 @@ public class Lab4Service {
         final StructuralElementGreyscale structuralElement_Dilation = createDefaultStructuralElementGreyscale_demoDilation();
         final GreyscaleImage erodedImage = erosionGreyscale(greyscaleImage, structuralElement_Erosion);
         final GreyscaleImage dilatedImage =  dilationGreyscale(erodedImage, structuralElement_Dilation);
-        return dilatedImage;
-//        return drawOutline(dilatedImage);
+        return drawOutline(dilatedImage);
     }
 
     /**
@@ -209,13 +208,48 @@ public class Lab4Service {
      */
     private GreyscaleImage drawOutline(final GreyscaleImage image) {
         final GreyscaleImage erodedImage = erosionGreyscale(image, createDefaultStructuralElementGreyscale_demoErosion());
-        return substractImageAndDrawOutline(image, erodedImage);
+//        return substractImage(image, erodedImage);
+        final GreyscaleImage newImage = new GreyscaleImage(image);
+        final int minDifference = 50;
+        for (int i = 0; i < erodedImage.getHeight(); i++) {
+            for (int j = 0; j < erodedImage.getWidth(); j++) {
+                final Integer[][] neighboors =  Lab2Service.getNeighborPixels(image.getMatrix(), 5, i, j);
+                final int pixel = image.getMatrix()[i][j];
+                if (max(neighboors) - pixel > minDifference || pixel - min(neighboors) > minDifference) {
+                    newImage.setPixel(i, j, L);
+                }
+            }
+        }
+        return newImage;
+    }
+
+    private int max(final Integer[][] matrix) {
+        int max = matrix[0][0];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] > max) {
+                    max = matrix[i][j];
+                }
+            }
+        }
+        return max;
+    }
+    private int min(final Integer[][] matrix) {
+        int min = matrix[0][0];
+        for (int i = 0; i < matrix.length; i++) {
+            for (int j = 0; j < matrix[0].length; j++) {
+                if (matrix[i][j] < min) {
+                    min = matrix[i][j];
+                }
+            }
+        }
+        return min;
     }
 
     /**
      * @return imageMinuend - imageSubtractor
      */
-    private BlackWhiteImage substractImageAndDrawOutline(final BlackWhiteImage imageMinuend, final BlackWhiteImage imageSubtractor) {
+    private BlackWhiteImage substractImage(final BlackWhiteImage imageMinuend, final BlackWhiteImage imageSubtractor) {
         final int height = imageMinuend.getHeight();
         final int width = imageMinuend.getWidth();
         final BlackWhiteImage imageDifference = new BlackWhiteImage(height, width);
@@ -232,7 +266,7 @@ public class Lab4Service {
     /**
      * @return imageMinuend - imageSubtractor
      */
-    private GreyscaleImage substractImageAndDrawOutline(final GreyscaleImage imageMinuend, final GreyscaleImage imageSubtractor) {
+    private GreyscaleImage substractImage(final GreyscaleImage imageMinuend, final GreyscaleImage imageSubtractor) {
         final int height = imageMinuend.getHeight();
         final int width = imageMinuend.getWidth();
         final GreyscaleImage imageDifference = new GreyscaleImage(height, width);
@@ -240,10 +274,7 @@ public class Lab4Service {
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                int pixel = ImageConverter.clamp(imageMinuend.getMatrix()[i][j] - imageSubtractor.getMatrix()[i][j]);
-                if (pixel < delta || pixel > L-delta) {
-                    //pixel = L;
-                }
+                final int pixel = ImageConverter.clamp(imageMinuend.getMatrix()[i][j] - imageSubtractor.getMatrix()[i][j]);
                 imageDifference.setPixel(i, j, pixel);
             }
         }
@@ -299,7 +330,7 @@ public class Lab4Service {
     }
 
     private StructuralElementGreyscale createDefaultStructuralElementGreyscale_demoDilation() {
-        final int size = 6;
+        final int size = 4;
         final int[][] matrix = new int[size][size];
         // v1
         matrix[0][0] = 10;

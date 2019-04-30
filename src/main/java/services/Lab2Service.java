@@ -49,7 +49,7 @@ public class Lab2Service {
      * @return the matrix[matrixSize][matrixSize] around the pixel from [line,column] from the given image (the pixel is in the middle of the returned matrix).
      * If the pixel is on the edge of the image, the non-existent pixels are set to the arithmetic mean of the other pixels.
      */
-    private Integer[][] getNeighborPixels(final int[][] image, final int matrixSize, final int line, final int column) {
+    static Integer[][] getNeighborPixels(final int[][] image, final int matrixSize, final int line, final int column) {
         final Integer[][] neighborMatrix = new Integer[matrixSize][matrixSize];
         int pixelSum = 0;
         int nrOfNonNullPixels = 0;
