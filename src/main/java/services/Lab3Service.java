@@ -39,7 +39,7 @@ public class Lab3Service implements Observable {
 
     /**
      * @param neighborPixels - 3x3 matrix
-     * @return true if the centered pixel is white and any its neighbors (only Left, Right, Up, Down) is black
+     * @return true if the centered pixel is white and any of its neighbors (only Left, Right, Up, Down) is black
      */
     private boolean pixelIsOnOutline(final boolean[][] neighborPixels) {
         if (!neighborPixels[1][1]) {
