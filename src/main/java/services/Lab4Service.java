@@ -1,24 +1,24 @@
 package services;
 
 import converters.ImageConverter;
-import domain.BlackWhiteImage;
 import domain.GreyscaleImage;
 import domain.Point2D;
-import domain.StructuralElementBW;
 import domain.StructuralElementGreyscale;
+import domain.StructuralElementWB;
+import domain.WhiteBlackImage;
 
 import static app.Main.L;
 
 public class Lab4Service {
 
-    public BlackWhiteImage erosionBW(final BlackWhiteImage blackWhiteImage) {
-        final StructuralElementBW structuralElement = createDefaultStructuralElementBW_demoErosion();
-        return erosionBW(blackWhiteImage, structuralElement);
+    public WhiteBlackImage erosionWB(final WhiteBlackImage whiteBlackImage) {
+        final StructuralElementWB structuralElement = createDefaultStructuralElementBW_demoErosion();
+        return erosionWB(whiteBlackImage, structuralElement);
     }
 
-    public BlackWhiteImage dilationBW(final BlackWhiteImage blackWhiteImage) {
-        final StructuralElementBW structuralElement = createDefaultStructuralElementBW_demoDilation();
-        return dilationBW(blackWhiteImage, structuralElement);
+    public WhiteBlackImage dilationWB(final WhiteBlackImage whiteBlackImage) {
+        final StructuralElementWB structuralElement = createDefaultStructuralElementBW_demoDilation();
+        return dilationWB(whiteBlackImage, structuralElement);
     }
 
     public GreyscaleImage erosionGreyscale(final GreyscaleImage greyscaleImage) {
@@ -31,10 +31,10 @@ public class Lab4Service {
         return dilationGreyscale(greyscaleImage, structuralElement);
     }
 
-    private BlackWhiteImage erosionBW(final BlackWhiteImage image, final StructuralElementBW structuralElement) {
+    private WhiteBlackImage erosionWB(final WhiteBlackImage image, final StructuralElementWB structuralElement) {
         final int height = image.getHeight();
         final int width = image.getWidth();
-        final BlackWhiteImage newImage = new BlackWhiteImage(height, width);
+        final WhiteBlackImage newImage = new WhiteBlackImage(height, width);
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -76,10 +76,10 @@ public class Lab4Service {
         return newImage;
     }
 
-    private BlackWhiteImage dilationBW(final BlackWhiteImage image, final StructuralElementBW structuralElement) {
+    private WhiteBlackImage dilationWB(final WhiteBlackImage image, final StructuralElementWB structuralElement) {
         final int height = image.getHeight();
         final int width = image.getWidth();
-        final BlackWhiteImage newImage = new BlackWhiteImage(height, width);
+        final WhiteBlackImage newImage = new WhiteBlackImage(height, width);
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -96,7 +96,7 @@ public class Lab4Service {
      * @param x - column of the point from image
      * @return <true> if the white pixels of the structural element matches perfectly the image (considering it's center) and <false> otherwise
      */
-    private boolean appliesPerfectly(final BlackWhiteImage image, final StructuralElementBW structuralElement, final int y, final int x) {
+    private boolean appliesPerfectly(final WhiteBlackImage image, final StructuralElementWB structuralElement, final int y, final int x) {
         for (int i = 0; i < structuralElement.getHeight(); i++) {
             for (int j = 0; j < structuralElement.getWidth(); j++) {
                 if (!structuralElement.getMatrix()[i][j]) {
@@ -169,7 +169,7 @@ public class Lab4Service {
      * @param x - column of the point from image
      * @return <true> if the at least 1 white pixel of the structural element matches the image (considering it's center) and <false> otherwise
      */
-    private boolean appliesPartialy(final BlackWhiteImage image, final StructuralElementBW structuralElement, final int y, final int x) {
+    private boolean appliesPartialy(final WhiteBlackImage image, final StructuralElementWB structuralElement, final int y, final int x) {
         for (int i = 0; i < structuralElement.getHeight(); i++) {
             for (int j = 0; j < structuralElement.getWidth(); j++) {
                 if (!structuralElement.getMatrix()[i][j]) {
@@ -189,17 +189,17 @@ public class Lab4Service {
         return false;
     }
 
-    public BlackWhiteImage determineContour(final BlackWhiteImage blackWhiteImage) {
-        final StructuralElementBW structuralElement = createDefaultStructuralElementBW_contourDetermination();
-        final BlackWhiteImage erodedImage = erosionBW(blackWhiteImage, structuralElement);
-        return substractImage(blackWhiteImage, erodedImage);
+    public WhiteBlackImage determineContour(final WhiteBlackImage whiteBlackImage) {
+        final StructuralElementWB structuralElement = createDefaultStructuralElementBW_contourDetermination();
+        final WhiteBlackImage erodedImage = erosionWB(whiteBlackImage, structuralElement);
+        return substractImage(whiteBlackImage, erodedImage);
     }
 
     public GreyscaleImage texturalSegmentation(final GreyscaleImage greyscaleImage) {
         final StructuralElementGreyscale structuralElement_Erosion = createDefaultStructuralElementGreyscale_demoErosion();
         final StructuralElementGreyscale structuralElement_Dilation = createDefaultStructuralElementGreyscale_demoDilation();
         final GreyscaleImage erodedImage = erosionGreyscale(greyscaleImage, structuralElement_Erosion);
-        final GreyscaleImage dilatedImage =  dilationGreyscale(erodedImage, structuralElement_Dilation);
+        final GreyscaleImage dilatedImage = dilationGreyscale(erodedImage, structuralElement_Dilation);
         return drawOutline(dilatedImage);
     }
 
@@ -213,7 +213,7 @@ public class Lab4Service {
         final int minDifference = 50;
         for (int i = 0; i < erodedImage.getHeight(); i++) {
             for (int j = 0; j < erodedImage.getWidth(); j++) {
-                final Integer[][] neighboors =  Lab2Service.getNeighborPixels(image.getMatrix(), 5, i, j);
+                final Integer[][] neighboors = Lab2Service.getNeighborPixels(image.getMatrix(), 5, i, j);
                 final int pixel = image.getMatrix()[i][j];
                 if (max(neighboors) - pixel > minDifference || pixel - min(neighboors) > minDifference) {
                     newImage.setPixel(i, j, L);
@@ -234,6 +234,7 @@ public class Lab4Service {
         }
         return max;
     }
+
     private int min(final Integer[][] matrix) {
         int min = matrix[0][0];
         for (int i = 0; i < matrix.length; i++) {
@@ -249,10 +250,10 @@ public class Lab4Service {
     /**
      * @return imageMinuend - imageSubtractor
      */
-    private BlackWhiteImage substractImage(final BlackWhiteImage imageMinuend, final BlackWhiteImage imageSubtractor) {
+    private WhiteBlackImage substractImage(final WhiteBlackImage imageMinuend, final WhiteBlackImage imageSubtractor) {
         final int height = imageMinuend.getHeight();
         final int width = imageMinuend.getWidth();
-        final BlackWhiteImage imageDifference = new BlackWhiteImage(height, width);
+        final WhiteBlackImage imageDifference = new WhiteBlackImage(height, width);
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
@@ -281,16 +282,16 @@ public class Lab4Service {
         return imageDifference;
     }
 
-    private StructuralElementBW createDefaultStructuralElementBW_demoErosion() {
+    private StructuralElementWB createDefaultStructuralElementBW_demoErosion() {
         final boolean[][] matrix = new boolean[2][2];
         matrix[0][0] = true;
         matrix[0][1] = true;
         matrix[1][0] = true;
         matrix[1][1] = false;
-        return new StructuralElementBW(matrix, new Point2D(0, 0));
+        return new StructuralElementWB(matrix, new Point2D(0, 0));
     }
 
-    private StructuralElementBW createDefaultStructuralElementBW_demoDilation() {
+    private StructuralElementWB createDefaultStructuralElementBW_demoDilation() {
         final boolean[][] matrix = new boolean[3][3];
         matrix[0][0] = true;
         matrix[0][1] = true;
@@ -301,10 +302,10 @@ public class Lab4Service {
         matrix[2][0] = true;
         matrix[2][1] = false;
         matrix[2][2] = false;
-        return new StructuralElementBW(matrix, new Point2D(1, 1));
+        return new StructuralElementWB(matrix, new Point2D(1, 1));
     }
 
-    private StructuralElementBW createDefaultStructuralElementBW_contourDetermination() {
+    private StructuralElementWB createDefaultStructuralElementBW_contourDetermination() {
         final boolean[][] matrix = new boolean[3][3];
         matrix[0][0] = true;
         matrix[0][1] = true;
@@ -315,7 +316,7 @@ public class Lab4Service {
         matrix[2][0] = true;
         matrix[2][1] = true;
         matrix[2][2] = true;
-        return new StructuralElementBW(matrix, new Point2D(1, 1));
+        return new StructuralElementWB(matrix, new Point2D(1, 1));
     }
 
     private StructuralElementGreyscale createDefaultStructuralElementGreyscale_demoErosion() {
@@ -349,5 +350,54 @@ public class Lab4Service {
             }
         }
         return new StructuralElementGreyscale(matrix);
+    }
+
+    /**
+     * x ⊂ x2
+     * Inclusion refers white pixels, not dimensions.
+     */
+    public void testInclusionProperty(final WhiteBlackImage x, final WhiteBlackImage x2) {
+        final StructuralElementWB b = createDefaultStructuralElementBW_demoErosion();
+        final StructuralElementWB b2 = createDefaultStructuralElementBW_demoDilation(); // b ⊂ b2
+
+        // Dacă x ⊂ x2 atunci x-b ⊂ x2-b, unde „-” înseamnă „eroziune”
+        final WhiteBlackImage x_b = erosionWB(x, b);
+        final WhiteBlackImage x2_b = erosionWB(x2, b);
+        final boolean x_bIsIncludedInX2_b = included(x_b, x2_b);
+        System.out.println("Dacă x ⊂ x2 atunci x-b ⊂ x2-b (unde „-” înseamnă „eroziune”): " + x_bIsIncludedInX2_b);
+
+        // Dacă x ⊂ x2 atunci x+b ⊂ x2+b2, unde „+” înseamnă „dilatare”
+        final WhiteBlackImage xPb = dilationWB(x, b);
+        final WhiteBlackImage x2Pb2 = dilationWB(x2, b2);
+        final boolean xPbIsIncludedInX2Pb2 = included(xPb, x2Pb2);
+        System.out.println("Dacă x ⊂ x2 atunci x+b ⊂ x2+b2 (unde „+” înseamnă „dilatare”): " + xPbIsIncludedInX2Pb2);
+
+        // Dacă b ⊂ b2 atunci x-b ⊂ x-b2, unde „-” înseamnă „eroziune”
+        final WhiteBlackImage x_b2 = erosionWB(x, b2);
+        final boolean x_bIsIncludedInX_b2 = included(x_b, x_b2);
+        System.out.println("Dacă b ⊂ b2 atunci x-b ⊂ x-b2 (unde „-” înseamnă „eroziune”): " + x_bIsIncludedInX_b2);
+    }
+
+    /**
+     * @return <true> if image1 ⊂ image2 and <false> otherwise
+     * Inclusion refers white pixels, not dimensions.
+     */
+    private boolean included(final WhiteBlackImage image1, final WhiteBlackImage image2) {
+        final int height = image1.getHeight();
+        final int width = image1.getWidth();
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                final boolean pixel1 = image1.getMatrix()[i][j];
+                if (!pixel1) {
+                    continue;
+                }
+                final boolean pixel2 = image2.getMatrix()[i][j];
+                if (!pixel2) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }

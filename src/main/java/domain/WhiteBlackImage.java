@@ -5,25 +5,25 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class BlackWhiteImage {
+public class WhiteBlackImage {
     private int height;
     private int width;
     private boolean[][] matrix;
 
-    public BlackWhiteImage(final int height, final int width) {
+    public WhiteBlackImage(final int height, final int width) {
         this.height = height;
         this.width = width;
         matrix = new boolean[height][width];
     }
 
-    public BlackWhiteImage(final BlackWhiteImage blackWhiteImage) {
-        height = blackWhiteImage.height;
-        width = blackWhiteImage.width;
+    public WhiteBlackImage(final WhiteBlackImage whiteBlackImage) {
+        height = whiteBlackImage.height;
+        width = whiteBlackImage.width;
         matrix = new boolean[height][width];
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                matrix[i][j] = blackWhiteImage.matrix[i][j];
+                matrix[i][j] = whiteBlackImage.matrix[i][j];
             }
         }
     }

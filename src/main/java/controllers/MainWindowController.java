@@ -1,11 +1,11 @@
 package controllers;
 
 import converters.ImageConverter;
-import domain.BlackWhiteImage;
 import domain.GreyscaleImage;
 import domain.Outline;
 import domain.RGBImage;
 import domain.Skeleton;
+import domain.WhiteBlackImage;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -405,8 +405,8 @@ public class MainWindowController implements Observer {
 
     private Void identifyOutlineAndAnimate(Void aVoid) {
         editedImage = ImageConverter.duplicateImage(toEditImage);
-        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        final Outline outline = lab3Service.identifyOutline(blackWhiteImage);
+        final WhiteBlackImage whiteBlackImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final Outline outline = lab3Service.identifyOutline(whiteBlackImage);
         lab3Service.animateOutline_LineByLine(outline, 3);
         return null;
     }
@@ -430,8 +430,8 @@ public class MainWindowController implements Observer {
     }
 
     private Void convertToBlackWhite(Void aVoid) {
-        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImage);
+        final WhiteBlackImage whiteBlackImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        editedImage = ImageConverter.blackWhiteImageToImage(whiteBlackImage);
         editedImageView.setImage(editedImage);
         return null;
     }
@@ -447,8 +447,8 @@ public class MainWindowController implements Observer {
     }
 
     private Void identifySkeleton(Void aVoid) {
-        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        final Skeleton skeleton = lab3Service.identifySkeleton(blackWhiteImage);
+        final WhiteBlackImage whiteBlackImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final Skeleton skeleton = lab3Service.identifySkeleton(whiteBlackImage);
         // draw skeleton over image
         final int width = skeleton.getWidth();
         final int height = skeleton.getHeight();
@@ -475,8 +475,8 @@ public class MainWindowController implements Observer {
 
     private Void identifySkeleton_Animate(Void aVoid) {
         editedImage = ImageConverter.duplicateImage(toEditImage);
-        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        new Thread(() -> lab3Service.identifySkeleton_Animate(blackWhiteImage, 20)).start();
+        final WhiteBlackImage whiteBlackImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        new Thread(() -> lab3Service.identifySkeleton_Animate(whiteBlackImage, 20)).start();
         return null;
     }
 
@@ -513,7 +513,7 @@ public class MainWindowController implements Observer {
     }
 
     private boolean pixelIsInCircle(final int xPixel, final int yPixel, final int xCenter, final int yCenter, final int radius) {
-        final int distanceFromCenter = (int) Math.sqrt(Math.pow(xPixel-xCenter, 2) + Math.pow(yPixel-yCenter, 2));
+        final int distanceFromCenter = (int) Math.sqrt(Math.pow(xPixel - xCenter, 2) + Math.pow(yPixel - yCenter, 2));
         return distanceFromCenter <= radius;
     }
 
@@ -529,9 +529,9 @@ public class MainWindowController implements Observer {
 
     private Void slimImage(Void aVoid) {
         editedImage = ImageConverter.duplicateImage(toEditImage);
-        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        lab3Service.slimImage_Animate(blackWhiteImage, 100);
-        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImage);
+        final WhiteBlackImage whiteBlackImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        lab3Service.slimImage_Animate(whiteBlackImage, 100);
+        editedImage = ImageConverter.blackWhiteImageToImage(whiteBlackImage);
         editedImageView.setImage(editedImage);
         return null;
     }
@@ -564,9 +564,9 @@ public class MainWindowController implements Observer {
     }
 
     private Void erosionBW(Void aVoid) {
-        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        final BlackWhiteImage blackWhiteImageEroded = lab4Service.erosionBW(blackWhiteImage);
-        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImageEroded);
+        final WhiteBlackImage whiteBlackImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final WhiteBlackImage whiteBlackImageEroded = lab4Service.erosionWB(whiteBlackImage);
+        editedImage = ImageConverter.blackWhiteImageToImage(whiteBlackImageEroded);
         editedImageView.setImage(editedImage);
         return null;
     }
@@ -582,9 +582,9 @@ public class MainWindowController implements Observer {
     }
 
     private Void dilationBW(Void aVoid) {
-        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        final BlackWhiteImage blackWhiteImageEroded = lab4Service.dilationBW(blackWhiteImage);
-        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImageEroded);
+        final WhiteBlackImage whiteBlackImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final WhiteBlackImage whiteBlackImageEroded = lab4Service.dilationWB(whiteBlackImage);
+        editedImage = ImageConverter.blackWhiteImageToImage(whiteBlackImageEroded);
         editedImageView.setImage(editedImage);
         return null;
     }
@@ -636,9 +636,9 @@ public class MainWindowController implements Observer {
     }
 
     private Void determineContour(Void aVoid) {
-        final BlackWhiteImage blackWhiteImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        final BlackWhiteImage blackWhiteImageEroded = lab4Service.determineContour(blackWhiteImage);
-        editedImage = ImageConverter.blackWhiteImageToImage(blackWhiteImageEroded);
+        final WhiteBlackImage whiteBlackImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
+        final WhiteBlackImage whiteBlackImageEroded = lab4Service.determineContour(whiteBlackImage);
+        editedImage = ImageConverter.blackWhiteImageToImage(whiteBlackImageEroded);
         editedImageView.setImage(editedImage);
         return null;
     }
@@ -659,5 +659,16 @@ public class MainWindowController implements Observer {
         editedImage = ImageConverter.grayscaleImageToImage(greyscaleImageSegmented);
         editedImageView.setImage(editedImage);
         return null;
+    }
+
+    @FXML
+    public void testinclusionPropertyHandler(ActionEvent actionEvent) throws IOException {
+        final File xFile = new File("D:\\Proiecte\\IntelliJ IDEA\\PI\\Laborator\\src\\main\\resources\\images\\F cut.jpg");
+        final File x2File = new File("D:\\Proiecte\\IntelliJ IDEA\\PI\\Laborator\\src\\main\\resources\\images\\F.jpg");
+        final BufferedImage xBufferedImage = ImageIO.read(xFile);
+        final BufferedImage x2BufferedImage = ImageIO.read(x2File);
+        final Image xImage = SwingFXUtils.toFXImage(xBufferedImage, null);
+        final Image x2Image = SwingFXUtils.toFXImage(x2BufferedImage, null);
+        lab4Service.testInclusionProperty(ImageConverter.bufferedImageToBlackWhiteImage(xImage), ImageConverter.bufferedImageToBlackWhiteImage(x2Image));
     }
 }

@@ -1,7 +1,7 @@
 package services;
 
 import converters.ImageConverter;
-import domain.BlackWhiteImage;
+import domain.WhiteBlackImage;
 import domain.Outline;
 import domain.Skeleton;
 import javafx.scene.paint.Color;
@@ -23,14 +23,14 @@ public class Lab3Service implements Observable {
         outlineColor = Color.rgb(255, 0, 0);
     }
 
-    public Outline identifyOutline(final BlackWhiteImage blackWhiteImage) {
-        final int height = blackWhiteImage.getHeight();
-        final int width = blackWhiteImage.getWidth();
+    public Outline identifyOutline(final WhiteBlackImage whiteBlackImage) {
+        final int height = whiteBlackImage.getHeight();
+        final int width = whiteBlackImage.getWidth();
         final Outline outline = new Outline(height, width);
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                final boolean[][] neighborPixels = getNeighborPixels(blackWhiteImage.getMatrix(), 3, i, j);
+                final boolean[][] neighborPixels = getNeighborPixels(whiteBlackImage.getMatrix(), 3, i, j);
                 outline.setPixel(i, j, pixelIsOnOutline(neighborPixels));
             }
         }
@@ -201,10 +201,10 @@ public class Lab3Service implements Observable {
         this.observers.add(observer);
     }
 
-    public Skeleton identifySkeleton(final BlackWhiteImage blackWhiteImage) {
-        final int height = blackWhiteImage.getHeight();
-        final int width = blackWhiteImage.getWidth();
-        final Skeleton skeleton = new Skeleton(ImageConverter.blackWhiteImageToGreyscaleImage(blackWhiteImage).getMatrix());
+    public Skeleton identifySkeleton(final WhiteBlackImage whiteBlackImage) {
+        final int height = whiteBlackImage.getHeight();
+        final int width = whiteBlackImage.getWidth();
+        final Skeleton skeleton = new Skeleton(ImageConverter.blackWhiteImageToGreyscaleImage(whiteBlackImage).getMatrix());
         boolean changed = true;
 
         while (changed) {
@@ -240,10 +240,10 @@ public class Lab3Service implements Observable {
         return skeleton;
     }
 
-    public Skeleton identifySkeleton_Animate(final BlackWhiteImage blackWhiteImage, final int millisToSleep) {
-        final int height = blackWhiteImage.getHeight();
-        final int width = blackWhiteImage.getWidth();
-        final Skeleton skeleton = new Skeleton(ImageConverter.blackWhiteImageToGreyscaleImage(blackWhiteImage).getMatrix());
+    public Skeleton identifySkeleton_Animate(final WhiteBlackImage whiteBlackImage, final int millisToSleep) {
+        final int height = whiteBlackImage.getHeight();
+        final int width = whiteBlackImage.getWidth();
+        final Skeleton skeleton = new Skeleton(ImageConverter.blackWhiteImageToGreyscaleImage(whiteBlackImage).getMatrix());
         boolean changed = true;
 
         while (changed) {
@@ -450,46 +450,46 @@ public class Lab3Service implements Observable {
         return nrOfIdenticalNeighbors;
     }
 
-    public void slimImage(final BlackWhiteImage blackWhiteImage) {
+    public void slimImage(final WhiteBlackImage whiteBlackImage) {
         boolean canSlim = true;
         while (canSlim) {
             canSlim = false;
-            final BlackWhiteImage blackWhiteImageCopy = new BlackWhiteImage(blackWhiteImage);
-            for (int i = 0; i < blackWhiteImage.getHeight(); i++) {
-                for (int j = 0; j < blackWhiteImage.getWidth(); j++) {
-                    if (!blackWhiteImage.getMatrix()[i][j]) {
+            final WhiteBlackImage whiteBlackImageCopy = new WhiteBlackImage(whiteBlackImage);
+            for (int i = 0; i < whiteBlackImage.getHeight(); i++) {
+                for (int j = 0; j < whiteBlackImage.getWidth(); j++) {
+                    if (!whiteBlackImage.getMatrix()[i][j]) {
                         continue;
                     }
 
-                    final boolean[][] neighbors = getNeighborPixels(blackWhiteImage.getMatrix(), 3, i, j);
+                    final boolean[][] neighbors = getNeighborPixels(whiteBlackImage.getMatrix(), 3, i, j);
                     final int nrOfOneNeighbors = getNrOfIdenticalNeighbors(neighbors);
                     if (nrOfOneNeighbors > 2 && nrOfOneNeighbors <= 6) {
-                        blackWhiteImageCopy.setPixel(i, j, false);
+                        whiteBlackImageCopy.setPixel(i, j, false);
                         notifyObservers(new ChangePixelEvent(j, i, Color.rgb(0,0,0)));
                         canSlim = true;
                     }
                 }
             }
-            blackWhiteImage.setMatrix(blackWhiteImageCopy.getMatrix());
+            whiteBlackImage.setMatrix(whiteBlackImageCopy.getMatrix());
         }
     }
 
-    public void slimImage_Animate(final BlackWhiteImage blackWhiteImage, final int millisToSleep) {
+    public void slimImage_Animate(final WhiteBlackImage whiteBlackImage, final int millisToSleep) {
         new Thread(() -> {
             boolean canSlim = true;
             while (canSlim) {
                 canSlim = false;
-                final BlackWhiteImage blackWhiteImageCopy = new BlackWhiteImage(blackWhiteImage);
-                for (int i = 0; i < blackWhiteImage.getHeight(); i++) {
-                    for (int j = 0; j < blackWhiteImage.getWidth(); j++) {
-                        if (!blackWhiteImage.getMatrix()[i][j]) {
+                final WhiteBlackImage whiteBlackImageCopy = new WhiteBlackImage(whiteBlackImage);
+                for (int i = 0; i < whiteBlackImage.getHeight(); i++) {
+                    for (int j = 0; j < whiteBlackImage.getWidth(); j++) {
+                        if (!whiteBlackImage.getMatrix()[i][j]) {
                             continue;
                         }
 
-                        final boolean[][] neighbors = getNeighborPixels(blackWhiteImage.getMatrix(), 3, i, j);
+                        final boolean[][] neighbors = getNeighborPixels(whiteBlackImage.getMatrix(), 3, i, j);
                         final int nrOfOneNeighbors = getNrOfIdenticalNeighbors(neighbors);
                         if (nrOfOneNeighbors > 2 && nrOfOneNeighbors <= 6) {
-                            blackWhiteImageCopy.setPixel(i, j, false);
+                            whiteBlackImageCopy.setPixel(i, j, false);
                             notifyObservers(new ChangePixelEvent(j, i, Color.rgb(0,0,0)));
                             canSlim = true;
                             // sleep
@@ -498,7 +498,7 @@ public class Lab3Service implements Observable {
                         }
                     }
                 }
-                blackWhiteImage.setMatrix(blackWhiteImageCopy.getMatrix());
+                whiteBlackImage.setMatrix(whiteBlackImageCopy.getMatrix());
             }
         }).start();
     }

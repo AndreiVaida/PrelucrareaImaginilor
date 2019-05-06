@@ -56,6 +56,7 @@
                   <MenuItem mnemonicParsing="false" onAction="#erosionGreyscaleHandler" text="Eroziune (greyscale)" />
                   <MenuItem mnemonicParsing="false" onAction="#dilationGreyscaleHandler" text="Dilatare (greyscale)" />
                   <MenuItem mnemonicParsing="false" onAction="#determineContourHandler" text="C7. d) Determinarea conturului" />
+                  <MenuItem mnemonicParsing="false" onAction="#testinclusionPropertyHandler" text="C7. e) Incluziune (proprietate) - afișare mesaj în consolă" />
                   <MenuItem mnemonicParsing="false" onAction="#texturalSegmentationHandler" text="C8. f) Segmentare texturală" />
                </items>
             </Menu>

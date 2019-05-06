@@ -1,6 +1,6 @@
 package converters;
 
-import domain.BlackWhiteImage;
+import domain.WhiteBlackImage;
 import domain.GreyscaleImage;
 import domain.RGBImage;
 import javafx.scene.image.Image;
@@ -41,10 +41,10 @@ public class ImageConverter {
         return rgbImage;
     }
 
-    public static BlackWhiteImage bufferedImageToBlackWhiteImage(final Image image) {
+    public static WhiteBlackImage bufferedImageToBlackWhiteImage(final Image image) {
         final int height = (int) image.getHeight();
         final int width = (int) image.getWidth();
-        final BlackWhiteImage blackWhiteImage = new BlackWhiteImage(height, width);
+        final WhiteBlackImage whiteBlackImage = new WhiteBlackImage(height, width);
 
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
@@ -53,10 +53,10 @@ public class ImageConverter {
                 final int green = (argb >> 8) & 0xff;
                 final int blue = argb & 0xff;
                 final boolean value = (red + green + blue) / 3 > L / 2;
-                blackWhiteImage.setPixel(j, i, value);
+                whiteBlackImage.setPixel(j, i, value);
             }
         }
-        return blackWhiteImage;
+        return whiteBlackImage;
     }
 
     public static Image rgbImageToImage(final RGBImage rgbImage) {
@@ -95,15 +95,15 @@ public class ImageConverter {
         return writableImage;
     }
 
-    public static Image blackWhiteImageToImage(final BlackWhiteImage blackWhiteImage) {
-        final int height = blackWhiteImage.getHeight();
-        final int width = blackWhiteImage.getWidth();
+    public static Image blackWhiteImageToImage(final WhiteBlackImage whiteBlackImage) {
+        final int height = whiteBlackImage.getHeight();
+        final int width = whiteBlackImage.getWidth();
         final WritableImage writableImage = new WritableImage(width, height);
         final PixelWriter pixelWriter = writableImage.getPixelWriter();
 
         for (int x = 0; x < width; x++){
             for (int y = 0; y < height; y++){
-                final boolean bwPixel = blackWhiteImage.getMatrix()[y][x];
+                final boolean bwPixel = whiteBlackImage.getMatrix()[y][x];
                 final int rgbPixel = bwPixel ? L : 0;
                 pixelWriter.setColor(x, y, Color.rgb(rgbPixel, rgbPixel, rgbPixel));
             }
@@ -131,14 +131,14 @@ public class ImageConverter {
         return writableImage;
     }
 
-    public static GreyscaleImage blackWhiteImageToGreyscaleImage(final BlackWhiteImage blackWhiteImage) {
-        final int height = blackWhiteImage.getHeight();
-        final int width = blackWhiteImage.getWidth();
+    public static GreyscaleImage blackWhiteImageToGreyscaleImage(final WhiteBlackImage whiteBlackImage) {
+        final int height = whiteBlackImage.getHeight();
+        final int width = whiteBlackImage.getWidth();
         final GreyscaleImage greyscaleImage = new GreyscaleImage(height, width);
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                greyscaleImage.setPixel(i, j, blackWhiteImage.getMatrix()[i][j] ? 1 : 0);
+                greyscaleImage.setPixel(i, j, whiteBlackImage.getMatrix()[i][j] ? 1 : 0);
             }
         }
         return greyscaleImage;
