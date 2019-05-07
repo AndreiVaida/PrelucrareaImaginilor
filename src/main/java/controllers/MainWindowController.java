@@ -476,7 +476,7 @@ public class MainWindowController implements Observer {
     private Void identifySkeleton_Animate(Void aVoid) {
         editedImage = ImageConverter.duplicateImage(toEditImage);
         final WhiteBlackImage whiteBlackImage = ImageConverter.bufferedImageToBlackWhiteImage(toEditImage);
-        new Thread(() -> lab3Service.identifySkeleton_Animate(whiteBlackImage, 20)).start();
+        new Thread(() -> lab3Service.identifySkeletonV2_Animate(whiteBlackImage, 200)).start();
         return null;
     }
 

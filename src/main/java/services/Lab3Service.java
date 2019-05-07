@@ -298,6 +298,59 @@ public class Lab3Service implements Observable {
         return skeleton;
     }
 
+    public Skeleton identifySkeletonV2_Animate(final WhiteBlackImage whiteBlackImage, final int millisToSleep) {
+        final int height = whiteBlackImage.getHeight();
+        final int width = whiteBlackImage.getWidth();
+        final Skeleton skeleton = new Skeleton(ImageConverter.blackWhiteImageToGreyscaleImage(whiteBlackImage).getMatrix());
+        boolean changed = true;
+
+        while (changed) {
+            changed = false;
+            final Skeleton skeletonCopy = new Skeleton(skeleton.getMatrix());
+
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    if (skeleton.getMatrix()[i][j] == 0) {
+                        continue;
+                    }
+
+                    final int[][] neighbors = getNeighborPixels(skeleton.getMatrix(), 3, i, j);
+                    final int minNeighbor = getMinNeighbor_of4(neighbors) + 1;
+                    skeletonCopy.setPixel(i, j, minNeighbor);
+
+                    if (minNeighbor > skeleton.getMatrix()[i][j]) {
+                        changed = true;
+                    }
+                }
+            }
+            skeleton.setMatrix(skeletonCopy.getMatrix());
+
+            for (int i = 0; i < height; i++) {
+                for (int j = 0; j < width; j++) {
+                    final int pixel = skeleton.getMatrix()[i][j];
+                    if (pixel > 0) {
+                        Color color = Color.rgb(255, 255, 255);
+                        final int[][] neighbors = getNeighborPixels(skeleton.getMatrix(), 3, i, j);
+                        final int maxNeighbor = getMaxNeighbor_of4(neighbors);
+
+                        if (pixel >= maxNeighbor) {
+                            color = Color.rgb(0, 255, 0);
+                        }
+                        notifyObservers(new ChangePixelEvent(j, i, color));
+                    }
+                }
+            }
+            try {
+                Thread.sleep(millisToSleep);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        notifyObservers(new SkeletonFinishedEvent(skeleton));
+        return skeleton;
+    }
+
     private boolean maxHeightIs1pxNarrow(final Skeleton skeleton) {
         for (int i = 0; i < skeleton.getHeight(); i++) {
             for (int j = 0; j < skeleton.getWidth(); j++) {
