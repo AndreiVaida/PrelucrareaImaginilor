@@ -481,7 +481,6 @@ public class MainWindowController implements Observer {
     }
 
     private void fillSkeleton(final Skeleton skeleton) {
-        System.out.println("aici");
         final int radius = skeleton.getMaxHeight();
         final Color circleColor = Color.rgb(0, 0, 255);
         for (int i = 0; i < skeleton.getHeight(); i++) {

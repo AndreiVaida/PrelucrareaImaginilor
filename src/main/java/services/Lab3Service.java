@@ -316,6 +316,7 @@ public class Lab3Service implements Observable {
 
                     final int[][] neighbors = getNeighborPixels(skeleton.getMatrix(), 3, i, j);
                     int minNeighbor = getMinNeighbor_of4(neighbors) + 1;
+                    // use this if only for objects which looks like F
                     if (neighbors[1][1] == neighbors[0][0] + 1 || neighbors[1][1] == neighbors[0][2] + 1 || neighbors[1][1] == neighbors[2][0] + 1 || neighbors[1][1] == neighbors[2][2] + 1) {
                         minNeighbor = neighbors[1][1];
                     }
