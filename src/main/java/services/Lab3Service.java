@@ -76,7 +76,7 @@ public class Lab3Service implements Observable {
      * @return the matrix[matrixSize][matrixSize] around the pixel from [line,column] from the given image (the pixel is in the middle of the returned matrix).
      * If the pixel is on the edge of the image, the non-existent pixels are set to 0.
      */
-    private int[][] getNeighborPixels(final int[][] image, final int matrixSize, final int line, final int column) {
+    public int[][] getNeighborPixels(final int[][] image, final int matrixSize, final int line, final int column) {
         final int[][] neighborMatrix = new int[matrixSize][matrixSize];
 
         // build the neighbor matrix
@@ -315,7 +315,10 @@ public class Lab3Service implements Observable {
                     }
 
                     final int[][] neighbors = getNeighborPixels(skeleton.getMatrix(), 3, i, j);
-                    final int minNeighbor = getMinNeighbor_of4(neighbors) + 1;
+                    int minNeighbor = getMinNeighbor_of4(neighbors) + 1;
+                    if (neighbors[1][1] == neighbors[0][0] + 1 || neighbors[1][1] == neighbors[0][2] + 1 || neighbors[1][1] == neighbors[2][0] + 1 || neighbors[1][1] == neighbors[2][2] + 1) {
+                        minNeighbor = neighbors[1][1];
+                    }
                     skeletonCopy.setPixel(i, j, minNeighbor);
 
                     if (minNeighbor > skeleton.getMatrix()[i][j]) {
@@ -408,7 +411,7 @@ public class Lab3Service implements Observable {
      * @param neighbors - 3x3 matrix
      * Consider only 4 neighbors: up, down, left, right
      */
-    private int getMaxNeighbor_of4(final int[][] neighbors) {
+    public int getMaxNeighbor_of4(final int[][] neighbors) {
         int max = neighbors[0][1];
         if (neighbors[1][0] > max) {
             max = neighbors[1][0];
@@ -554,5 +557,22 @@ public class Lab3Service implements Observable {
                 whiteBlackImage.setMatrix(whiteBlackImageCopy.getMatrix());
             }
         }).start();
+    }
+
+    private int numberOfTransitions(int i, int j, int[][] matrix) {
+        int[][] transitions = {{i-1,j},{i-1,j+1},{i,j+1},{i+1,j+1},{i+1,j},{i+1,j-1},{i,j-1},{i-1,j-1},{i-1,j}};
+        int k = 0;
+        int nr = 0;
+        int pixel1, pixel2;
+        while ( k < transitions.length - 1){
+            pixel1 = matrix[transitions[k][0]][transitions[k][1]];
+            pixel2 = matrix[transitions[k+1][0]][transitions[k+1][1]];
+
+            if(pixel1 == 0 && pixel2 == 255)
+                nr++;
+
+            k++;
+        }
+        return  nr;
     }
 }

@@ -166,7 +166,7 @@ public class MainWindowController implements Observer {
         final File oldPhotograpther_saltAndPepper = new File("./src/main/resources/images/saltnpaperp3.jpg");
         final File f = new File("./src/main/resources/images/F.jpg");
         try {
-            loadImage(oldPhotograpther_saltAndPepper);
+            loadImage(f);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -481,12 +481,22 @@ public class MainWindowController implements Observer {
     }
 
     private void fillSkeleton(final Skeleton skeleton) {
+        System.out.println("aici");
         final int radius = skeleton.getMaxHeight();
         final Color circleColor = Color.rgb(0, 0, 255);
         for (int i = 0; i < skeleton.getHeight(); i++) {
             for (int j = 0; j < skeleton.getWidth(); j++) {
-                if (skeleton.getMatrix()[i][j] == skeleton.getMaxHeight()) {
-                    addCircleToImage(i, j, circleColor, radius);
+//                if (skeleton.getMatrix()[i][j] == skeleton.getMaxHeight()) {
+//                    addCircleToImage(i, j, circleColor, radius);
+//                }
+                final int pixel = skeleton.getMatrix()[i][j];
+                if (pixel < 1) {
+                    continue;
+                }
+                final int[][] neighbors = lab3Service.getNeighborPixels(skeleton.getMatrix(), 3, i, j);
+                final int maxNeighbor = lab3Service.getMaxNeighbor_of4(neighbors);
+                if (pixel >= maxNeighbor) {
+                    addCircleToImage(i, j, circleColor, pixel);
                 }
             }
         }
